@@ -1,140 +1,242 @@
 import { useState } from 'react';
-import { CheckCircle2, DatabaseZap, Send, ShieldCheck, Sparkles } from 'lucide-react';
-import { assistantCapabilities, chatPrompts } from '../data/strategy';
+import {
+  Check,
+  ChevronDown,
+  DatabaseZap,
+  Globe,
+  MessageSquarePlus,
+  MoreHorizontal,
+  Plus,
+  Send,
+  Settings,
+  ShieldCheck,
+  Sparkles,
+} from 'lucide-react';
+import { chatPrompts } from '../data/strategy';
 
 type ChatMode = 'Ask' | 'Act';
+
+const projects = [
+  { name: 'Crystal Hues PPC', status: 'Google + Meta connected' },
+  { name: 'Demo Ecommerce', status: 'Meta connected' },
+  { name: 'Lead Gen Test', status: 'Needs connectors' },
+];
+
+const chats = [
+  'Why did CPA increase this week?',
+  'Find wasted spend',
+  'Scale winning campaigns',
+  'Create campaign plan',
+];
+
+const tools = [
+  { label: 'Google Ads', status: 'Connected', icon: DatabaseZap },
+  { label: 'Meta Ads', status: 'Connected', icon: DatabaseZap },
+  { label: 'Website', status: 'Connected', icon: Globe },
+  { label: 'MCP/API', status: 'Project scoped', icon: Settings },
+];
 
 export function RevenueChat() {
   const [mode, setMode] = useState<ChatMode>('Ask');
   const [draft, setDraft] = useState(chatPrompts[0].prompt);
 
-  const modeCopy =
-    mode === 'Ask'
-      ? 'Ask mode fetches connected campaign data and explains what is happening.'
-      : 'Act mode drafts campaign changes, then asks for final approval before execution.';
-
   return (
-    <section className="assistant-workspace">
-      <div className="assistant-shell">
-        <div className="assistant-topbar">
+    <main className="chatgpt-shell">
+      <aside className="chatgpt-sidebar">
+        <div className="sidebar-brand">
+          <div className="brand-mark-small">
+            <Sparkles size={18} />
+          </div>
           <div>
-            <p>AI Campaign Assistant</p>
-            <h2>Ask about campaigns. Act only after approval.</h2>
-            <span>{modeCopy}</span>
+            <strong>AdOps Intelligence</strong>
+            <span>Campaign AI workspace</span>
+          </div>
+        </div>
+
+        <button className="new-chat-button" type="button">
+          <MessageSquarePlus size={17} />
+          New chat
+        </button>
+
+        <section className="sidebar-section">
+          <div className="sidebar-section-title">
+            <span>Projects</span>
+            <button type="button" aria-label="Create project">
+              <Plus size={15} />
+            </button>
           </div>
 
-          <div className="mode-toggle" aria-label="Assistant mode">
+          <div className="project-list">
+            {projects.map((project, index) => (
+              <button className={index === 0 ? 'project-item active' : 'project-item'} key={project.name} type="button">
+                <span>{project.name}</span>
+                <small>{project.status}</small>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="sidebar-section">
+          <div className="sidebar-section-title">
+            <span>Recent chats</span>
+          </div>
+
+          <div className="chat-history">
+            {chats.map((chat) => (
+              <button key={chat} type="button">
+                {chat}
+              </button>
+            ))}
+          </div>
+        </section>
+      </aside>
+
+      <section className="chatgpt-main">
+        <header className="chatgpt-header">
+          <button className="project-selector" type="button">
+            Crystal Hues PPC
+            <ChevronDown size={16} />
+          </button>
+
+          <div className="mode-switch">
             {(['Ask', 'Act'] as ChatMode[]).map((item) => (
-              <button
-                className={mode === item ? 'active' : ''}
-                key={item}
-                onClick={() => setMode(item)}
-                type="button"
-              >
+              <button className={mode === item ? 'active' : ''} key={item} onClick={() => setMode(item)} type="button">
                 {item}
               </button>
             ))}
           </div>
+
+          <button className="header-icon" type="button" aria-label="Project settings">
+            <MoreHorizontal size={18} />
+          </button>
+        </header>
+
+        <div className="tool-strip" aria-label="Connected project tools">
+          {tools.map((tool) => {
+            const Icon = tool.icon;
+
+            return (
+              <span key={tool.label}>
+                <Icon size={15} />
+                {tool.label}
+                <em>{tool.status}</em>
+              </span>
+            );
+          })}
         </div>
 
-        <div className="connected-sources" aria-label="Connected data sources">
-          <span>
-            <DatabaseZap size={16} />
-            Google Ads connected
-          </span>
-          <span>
-            <DatabaseZap size={16} />
-            Meta Ads connected
-          </span>
-          <span>
-            <ShieldCheck size={16} />
-            Approval required for writes
-          </span>
-        </div>
-
-        <div className="simple-chat-panel">
-          <div className="chat-bubble user">
-            <p>{draft}</p>
-          </div>
-
-          <div className="chat-bubble assistant">
-            <div className="assistant-label">
-              <Sparkles size={17} />
-              <strong>{mode} mode response</strong>
+        <section className="conversation">
+          <div className="assistant-intro">
+            <div className="assistant-orb">
+              <Sparkles size={24} />
             </div>
-
-            {mode === 'Ask' ? (
-              <>
-                <p>
-                  I checked connected Google and Meta campaign signals. The biggest revenue leak is high spend on
-                  low-intent search terms, followed by Meta creative fatigue in prospecting.
-                </p>
-                <ul>
-                  <li>Wasted spend identified: ₹42.8k from search terms and fatigued creatives.</li>
-                  <li>Most scalable pocket: High Intent Non Brand Search with stable CPA.</li>
-                  <li>Confidence: High for Google Search, medium for Meta conversion forecast.</li>
-                </ul>
-              </>
-            ) : (
-              <>
-                <p>
-                  I can prepare the changes, but I will not execute them until you approve the final action list.
-                </p>
-                <ul>
-                  <li>Draft 14 negative keywords for Google Search.</li>
-                  <li>Reduce fatigued Meta ad set budget by 12%.</li>
-                  <li>Create a replacement creative test with proof, comparison, and objection hooks.</li>
-                </ul>
-                <div className="approval-preview">
-                  <CheckCircle2 size={17} />
-                  <span>Next step: show exact platform changes for final approval.</span>
-                </div>
-              </>
-            )}
+            <h1>How can I help with your campaigns?</h1>
+            <p>
+              Ask mode reads connected campaigns and explains what is happening. Act mode prepares changes and asks for
+              final approval before touching Google Ads or Meta Ads.
+            </p>
           </div>
 
-          <div className="prompt-row">
-            {chatPrompts.slice(0, 4).map((item) => (
-              <button key={item.label} onClick={() => setDraft(item.prompt)} type="button">
-                {item.label}
+          <div className="message-row user-row">
+            <div className="message-card user-card">{draft}</div>
+          </div>
+
+          <div className="message-row assistant-row">
+            <div className="avatar">
+              <Sparkles size={17} />
+            </div>
+            <div className="message-card assistant-card">
+              <div className="mode-line">
+                <span>{mode} mode</span>
+                {mode === 'Act' && <em>Final approval required</em>}
+              </div>
+
+              {mode === 'Ask' ? (
+                <>
+                  <p>
+                    I checked connected Google Ads and Meta Ads data. The largest issue is wasted spend from low-intent
+                    search terms, followed by Meta prospecting creative fatigue.
+                  </p>
+                  <table className="answer-table">
+                    <thead>
+                      <tr>
+                        <th>Finding</th>
+                        <th>Evidence</th>
+                        <th>Suggestion</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Search waste</td>
+                        <td>₹42.8k spend pool with weak conversion signal</td>
+                        <td>Add negatives and isolate buying-intent ad groups</td>
+                      </tr>
+                      <tr>
+                        <td>Meta fatigue</td>
+                        <td>Frequency rising while CTR falls</td>
+                        <td>Refresh proof and comparison creatives</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div className="response-actions">
+                    <button onClick={() => setMode('Act')} type="button">
+                      Switch to Act mode
+                    </button>
+                    <button className="ghost-button" type="button">
+                      Show more evidence
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p>I can prepare these changes. I will not execute anything until you approve the final list.</p>
+                  <div className="approval-card">
+                    <div>
+                      <ShieldCheck size={18} />
+                      <strong>Proposed actions</strong>
+                    </div>
+                    <ul>
+                      <li>Add 14 negative keywords to Google Search.</li>
+                      <li>Reduce fatigued Meta ad set budget by 12%.</li>
+                      <li>Create a new creative test with proof, comparison, and objection hooks.</li>
+                    </ul>
+                    <button type="button">
+                      <Check size={16} />
+                      Review final approval
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </section>
+
+        <footer className="composer-area">
+          <div className="suggestion-row">
+            {chatPrompts.slice(0, 4).map((prompt) => (
+              <button key={prompt.label} onClick={() => setDraft(prompt.prompt)} type="button">
+                {prompt.label}
               </button>
             ))}
           </div>
 
-          <div className="assistant-input">
+          <div className="composer">
             <textarea
-              aria-label="Ask AI about connected campaigns"
+              aria-label="Message campaign assistant"
               onChange={(event) => setDraft(event.target.value)}
-              placeholder="Ask anything about Google Ads or Meta campaigns..."
+              placeholder="Message AdOps Intelligence..."
               value={draft}
             />
             <button type="button" aria-label="Send message">
               <Send size={18} />
             </button>
           </div>
-        </div>
-      </div>
 
-      <aside className="assistant-side">
-        <div className="section-heading compact">
-          <div>
-            <p>Assistant contract</p>
-            <h2>Simple modes, serious controls</h2>
-          </div>
-        </div>
-
-        <div className="mode-capability-list">
-          {assistantCapabilities.map((capability) => (
-            <article key={`${capability.mode}-${capability.title}`}>
-              <span>{capability.mode}</span>
-              <div>
-                <h3>{capability.title}</h3>
-                <p>{capability.description}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </aside>
-    </section>
+          <p className="composer-note">
+            Project tools are scoped per project. Act mode always asks for final approval before campaign changes.
+          </p>
+        </footer>
+      </section>
+    </main>
   );
 }
