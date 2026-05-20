@@ -107,7 +107,10 @@ Recommended control path:
 
 ## AI Revenue Chat
 
-The chat interface should use the same connector layer as planning, but answer ad-hoc questions across campaigns.
+The chat interface should feel like a simple ChatGPT-style assistant for campaigns, with two modes:
+
+- Ask mode: read-only. Fetch information from connected campaigns and explain what is happening.
+- Act mode: write-capable only after final approval. Draft exact changes, show risk and expected impact, then ask the user to approve before executing.
 
 Required behavior:
 
@@ -116,6 +119,7 @@ Required behavior:
 - Separate facts from AI interpretation.
 - Convert strong answers into approval queue actions.
 - Convert strategy answers into campaign book sections.
+- Never execute Act mode changes without explicit final approval.
 - Support questions about waste, scaling, CPA spikes, creative fatigue, search intent, landing pages, competitor angles, budget split, and forecast confidence.
 
 High-value revenue features:

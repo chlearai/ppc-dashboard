@@ -1,91 +1,111 @@
 import { useState } from 'react';
-import { ArrowRight, DatabaseZap, FilePlus2, Send, ShieldCheck, Sparkles } from 'lucide-react';
-import { chatPrompts, growthLevers } from '../data/strategy';
+import { CheckCircle2, DatabaseZap, Send, ShieldCheck, Sparkles } from 'lucide-react';
+import { assistantCapabilities, chatPrompts } from '../data/strategy';
+
+type ChatMode = 'Ask' | 'Act';
 
 export function RevenueChat() {
+  const [mode, setMode] = useState<ChatMode>('Ask');
   const [draft, setDraft] = useState(chatPrompts[0].prompt);
 
+  const modeCopy =
+    mode === 'Ask'
+      ? 'Ask mode fetches connected campaign data and explains what is happening.'
+      : 'Act mode drafts campaign changes, then asks for final approval before execution.';
+
   return (
-    <section className="chat-workspace">
-      <div className="chat-main">
-        <div className="chat-hero">
+    <section className="assistant-workspace">
+      <div className="assistant-shell">
+        <div className="assistant-topbar">
           <div>
-            <p>AI Revenue Chat</p>
-            <h2>Ask anything. Get the answer, the evidence, and the next revenue action.</h2>
-            <span>
-              The chat should fetch Google Ads, Meta Ads, website, forecast, and research context before answering. It
-              turns strong answers into approved tasks, campaign plans, or experiment briefs.
-            </span>
+            <p>AI Campaign Assistant</p>
+            <h2>Ask about campaigns. Act only after approval.</h2>
+            <span>{modeCopy}</span>
           </div>
-          <div className="chat-source-stack">
-            <article>
-              <DatabaseZap size={18} />
-              <span>Google Ads, Meta Ads, site crawl, forecast data</span>
-            </article>
-            <article>
-              <ShieldCheck size={18} />
-              <span>Every write action goes through approval</span>
-            </article>
+
+          <div className="mode-toggle" aria-label="Assistant mode">
+            {(['Ask', 'Act'] as ChatMode[]).map((item) => (
+              <button
+                className={mode === item ? 'active' : ''}
+                key={item}
+                onClick={() => setMode(item)}
+                type="button"
+              >
+                {item}
+              </button>
+            ))}
           </div>
         </div>
 
-        <div className="prompt-bank">
-          {chatPrompts.map((item) => (
-            <button key={item.label} onClick={() => setDraft(item.prompt)} type="button">
-              {item.label}
-            </button>
-          ))}
+        <div className="connected-sources" aria-label="Connected data sources">
+          <span>
+            <DatabaseZap size={16} />
+            Google Ads connected
+          </span>
+          <span>
+            <DatabaseZap size={16} />
+            Meta Ads connected
+          </span>
+          <span>
+            <ShieldCheck size={16} />
+            Approval required for writes
+          </span>
         </div>
 
-        <div className="chat-panel">
-          <div className="message user-message">
+        <div className="simple-chat-panel">
+          <div className="chat-bubble user">
             <p>{draft}</p>
           </div>
 
-          <div className="message ai-message">
-            <div className="message-head">
-              <Sparkles size={18} />
-              <strong>Revenue answer format</strong>
-            </div>
-            <p>
-              I found three immediate growth paths: recover wasted spend from low-intent search terms, reallocate budget
-              into stable high-intent campaigns, and refresh fatigued Meta creative before CPM pressure compounds.
-            </p>
-
-            <div className="evidence-grid">
-              <article>
-                <span>Evidence</span>
-                <strong>₹42.8k waste pool</strong>
-                <p>Search terms and fatigued creatives are under target efficiency.</p>
-              </article>
-              <article>
-                <span>Confidence</span>
-                <strong>High for Search</strong>
-                <p>Backed by query data, spend, conversion lag, and CPA trend.</p>
-              </article>
-              <article>
-                <span>Action</span>
-                <strong>Draft approval queue</strong>
-                <p>Negatives, budget moves, creative refresh, and test plan.</p>
-              </article>
+          <div className="chat-bubble assistant">
+            <div className="assistant-label">
+              <Sparkles size={17} />
+              <strong>{mode} mode response</strong>
             </div>
 
-            <div className="answer-actions">
-              <button type="button">
-                Create action queue
-                <ArrowRight size={16} />
-              </button>
-              <button className="secondary" type="button">
-                Add to campaign book
-                <FilePlus2 size={16} />
-              </button>
-            </div>
+            {mode === 'Ask' ? (
+              <>
+                <p>
+                  I checked connected Google and Meta campaign signals. The biggest revenue leak is high spend on
+                  low-intent search terms, followed by Meta creative fatigue in prospecting.
+                </p>
+                <ul>
+                  <li>Wasted spend identified: ₹42.8k from search terms and fatigued creatives.</li>
+                  <li>Most scalable pocket: High Intent Non Brand Search with stable CPA.</li>
+                  <li>Confidence: High for Google Search, medium for Meta conversion forecast.</li>
+                </ul>
+              </>
+            ) : (
+              <>
+                <p>
+                  I can prepare the changes, but I will not execute them until you approve the final action list.
+                </p>
+                <ul>
+                  <li>Draft 14 negative keywords for Google Search.</li>
+                  <li>Reduce fatigued Meta ad set budget by 12%.</li>
+                  <li>Create a replacement creative test with proof, comparison, and objection hooks.</li>
+                </ul>
+                <div className="approval-preview">
+                  <CheckCircle2 size={17} />
+                  <span>Next step: show exact platform changes for final approval.</span>
+                </div>
+              </>
+            )}
           </div>
 
-          <div className="chat-input">
+          <div className="prompt-row">
+            {chatPrompts.slice(0, 4).map((item) => (
+              <button key={item.label} onClick={() => setDraft(item.prompt)} type="button">
+                {item.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="assistant-input">
             <textarea
-              aria-label="Ask AI about campaigns"
+              aria-label="Ask AI about connected campaigns"
               onChange={(event) => setDraft(event.target.value)}
+              placeholder="Ask anything about Google Ads or Meta campaigns..."
               value={draft}
             />
             <button type="button" aria-label="Send message">
@@ -95,23 +115,22 @@ export function RevenueChat() {
         </div>
       </div>
 
-      <aside className="growth-lever-panel">
+      <aside className="assistant-side">
         <div className="section-heading compact">
           <div>
-            <p>Revenue growth system</p>
-            <h2>Features that create step-change upside</h2>
+            <p>Assistant contract</p>
+            <h2>Simple modes, serious controls</h2>
           </div>
         </div>
 
-        <div className="growth-lever-list">
-          {growthLevers.map((lever) => (
-            <article key={lever.title}>
+        <div className="mode-capability-list">
+          {assistantCapabilities.map((capability) => (
+            <article key={`${capability.mode}-${capability.title}`}>
+              <span>{capability.mode}</span>
               <div>
-                <h3>{lever.title}</h3>
-                <span>{lever.upside}</span>
+                <h3>{capability.title}</h3>
+                <p>{capability.description}</p>
               </div>
-              <p>{lever.proof}</p>
-              <strong>{lever.nextStep}</strong>
             </article>
           ))}
         </div>

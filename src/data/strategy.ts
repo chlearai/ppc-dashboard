@@ -1,7 +1,6 @@
 import {
   BarChart3,
   BookOpenCheck,
-  BrainCircuit,
   Bot,
   CheckCircle2,
   CircleDollarSign,
@@ -61,6 +60,12 @@ export type GrowthLever = {
   upside: string;
   proof: string;
   nextStep: string;
+};
+
+export type AssistantCapability = {
+  mode: 'Ask' | 'Act';
+  title: string;
+  description: string;
 };
 
 export const navItems = [
@@ -237,7 +242,7 @@ export const planSections: PlanSection[] = [
 
 export const capabilityCards = [
   {
-    icon: BrainCircuit,
+    icon: Bot,
     title: 'Strategic Reasoning',
     text: 'Explains why the plan beats a normal platform setup.',
   },
@@ -299,6 +304,39 @@ export const chatPrompts: ChatPrompt[] = [
   {
     label: 'Competitor angle',
     prompt: 'What competitor and category angles should we test next based on search intent and Meta creative fatigue?',
+  },
+];
+
+export const assistantCapabilities: AssistantCapability[] = [
+  {
+    mode: 'Ask',
+    title: 'Campaign diagnosis',
+    description: 'Fetch spend, CPA, ROAS, search terms, creatives, audiences, and conversion trends before answering.',
+  },
+  {
+    mode: 'Ask',
+    title: 'Plain-English explanation',
+    description: 'Explain what changed, why it matters, and what confidence level the answer has.',
+  },
+  {
+    mode: 'Ask',
+    title: 'Opportunity discovery',
+    description: 'Find wasted spend, scaling opportunities, creative fatigue, landing page friction, and keyword gaps.',
+  },
+  {
+    mode: 'Act',
+    title: 'Draft campaign changes',
+    description: 'Prepare budget moves, pauses, negatives, creative tests, ad set changes, and campaign build steps.',
+  },
+  {
+    mode: 'Act',
+    title: 'Require final approval',
+    description: 'Show the exact change, expected impact, risk, rollback rule, and ask for approval before execution.',
+  },
+  {
+    mode: 'Act',
+    title: 'Audit every action',
+    description: 'Keep a log of who approved what, when, why, and which platform object changed.',
   },
 ];
 
