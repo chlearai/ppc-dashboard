@@ -105,6 +105,29 @@ Recommended control path:
 
 `AI intake -> data connectors -> plan generator -> simulation panel -> review editor -> approval queue -> campaign book export`
 
+## AI Revenue Chat
+
+The chat interface should use the same connector layer as planning, but answer ad-hoc questions across campaigns.
+
+Required behavior:
+
+- Fetch Google Ads and Meta Ads context before answering.
+- Show evidence, source, confidence, and assumptions.
+- Separate facts from AI interpretation.
+- Convert strong answers into approval queue actions.
+- Convert strategy answers into campaign book sections.
+- Support questions about waste, scaling, CPA spikes, creative fatigue, search intent, landing pages, competitor angles, budget split, and forecast confidence.
+
+High-value revenue features:
+
+- Revenue leak scanner.
+- Budget reallocation engine.
+- Creative intelligence loop.
+- Search intent expansion.
+- Landing page friction audit.
+- Incrementality guardrails.
+- Weekly strategist review generated from account data.
+
 ## Future Build Notes
 
 - Store finalized campaign books as versioned plan records.

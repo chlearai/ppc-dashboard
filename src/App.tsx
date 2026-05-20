@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { ArrowUpRight, Bell, CheckCircle2, Command, PanelLeft } from 'lucide-react';
 import { CampaignArchitect } from './components/CampaignArchitect';
 import { OperatorDashboard } from './components/OperatorDashboard';
+import { RevenueChat } from './components/RevenueChat';
 import { navItems } from './data/strategy';
 
 function App() {
-  const [activeModule, setActiveModule] = useState('Campaign Architect');
+  const [activeModule, setActiveModule] = useState('AI Revenue Chat');
 
   return (
     <main className="app-shell">
@@ -84,7 +85,9 @@ function App() {
           ))}
         </nav>
 
-        {activeModule === 'Campaign Architect' ? <CampaignArchitect /> : <OperatorDashboard />}
+        {activeModule === 'Campaign Architect' && <CampaignArchitect />}
+        {activeModule === 'AI Revenue Chat' && <RevenueChat />}
+        {activeModule !== 'Campaign Architect' && activeModule !== 'AI Revenue Chat' && <OperatorDashboard />}
       </section>
     </main>
   );

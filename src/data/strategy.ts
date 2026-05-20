@@ -2,6 +2,7 @@ import {
   BarChart3,
   BookOpenCheck,
   BrainCircuit,
+  Bot,
   CheckCircle2,
   CircleDollarSign,
   FileText,
@@ -50,8 +51,21 @@ export type IntelligenceMetric = {
   grade: 'Strong' | 'Review' | 'Limited';
 };
 
+export type ChatPrompt = {
+  label: string;
+  prompt: string;
+};
+
+export type GrowthLever = {
+  title: string;
+  upside: string;
+  proof: string;
+  nextStep: string;
+};
+
 export const navItems = [
   { label: 'Strategy Console', icon: BarChart3 },
+  { label: 'AI Revenue Chat', icon: Bot },
   { label: 'Campaign Architect', icon: BookOpenCheck },
   { label: 'Approval Queue', icon: ShieldCheck },
   { label: 'Research Library', icon: Radar },
@@ -263,4 +277,66 @@ export const approvalActions = [
   'Move 12% budget from retargeting to high-intent search',
   'Launch Meta creative test with 4 hooks and 3 proof formats',
   'Save campaign book as final plan for team build',
+];
+
+export const chatPrompts: ChatPrompt[] = [
+  {
+    label: 'Find revenue leaks',
+    prompt: 'Where are we wasting spend and what exact actions will recover revenue this week?',
+  },
+  {
+    label: 'Scale winners',
+    prompt: 'Which campaigns can safely scale, by how much, and what risk controls should we apply?',
+  },
+  {
+    label: 'Explain CPA spike',
+    prompt: 'Why did CPA increase this week across Google and Meta? Separate auction, creative, audience, and landing page causes.',
+  },
+  {
+    label: 'Create test plan',
+    prompt: 'Create a 14-day test plan to improve revenue without increasing total budget.',
+  },
+  {
+    label: 'Competitor angle',
+    prompt: 'What competitor and category angles should we test next based on search intent and Meta creative fatigue?',
+  },
+];
+
+export const growthLevers: GrowthLever[] = [
+  {
+    title: 'Revenue Leak Scanner',
+    upside: 'Recover 8 to 18% of wasted budget',
+    proof: 'Search terms with spend and no conversion, Meta ads with high frequency and falling CTR, weak landing page match.',
+    nextStep: 'Generate a pause, negative keyword, and creative refresh queue.',
+  },
+  {
+    title: 'Budget Reallocation Engine',
+    upside: 'Move spend into marginal winners',
+    proof: 'Compares CPA, ROAS, impression share, learning status, fatigue, and conversion lag by platform.',
+    nextStep: 'Draft budget shifts with max daily change limits and rollback rules.',
+  },
+  {
+    title: 'Creative Intelligence Loop',
+    upside: 'Improve Meta and PMax learning speed',
+    proof: 'Maps hooks, offers, proof points, formats, thumb-stop rate, CTR, CVR, and fatigue into next creative briefs.',
+    nextStep: 'Create 10 new ad angles with rationale and expected role in funnel.',
+  },
+  {
+    title: 'Search Intent Expansion',
+    upside: 'Find profitable non-brand demand',
+    proof: 'Uses Google keyword ideas, search term history, landing page themes, and competitor intent clusters.',
+    nextStep: 'Create new ad groups, RSAs, negatives, and forecasted CPC ranges.',
+  },
+  {
+    title: 'Landing Page Friction Audit',
+    upside: 'Increase conversion rate without more ad spend',
+    proof: 'Compares ad promise, keyword intent, page speed, form friction, proof density, and objection handling.',
+    nextStep: 'Produce page fixes and match each fix to campaign or creative angle.',
+  },
+  {
+    title: 'Incrementality Guardrails',
+    upside: 'Prevent false scaling',
+    proof: 'Flags brand cannibalization, retargeting over-credit, PMax overlap, and audience saturation.',
+    nextStep: 'Add holdout checks, exclusions, and separate budget controls.',
+  },
 ];
