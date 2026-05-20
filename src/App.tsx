@@ -15,8 +15,8 @@ function App() {
             <Command size={20} />
           </div>
           <div>
-            <strong>AI PPC Operator</strong>
-            <span>Google Ads + Meta Ads</span>
+            <strong>AdOps Intelligence</strong>
+            <span>Strategy OS for Google + Meta</span>
           </div>
         </div>
 
@@ -41,7 +41,7 @@ function App() {
 
         <div className="native-setup">
           <p>Native setup model</p>
-          <span>Accounts stay configured inside Google Ads and Meta Ads. This app plans, reviews, and approves.</span>
+          <span>Experts use it for better strategy. Junior operators use it for exact execution.</span>
         </div>
       </aside>
 
@@ -52,7 +52,7 @@ function App() {
           </button>
 
           <div className="page-title">
-            <p>Professional campaign planning and optimization</p>
+            <p>Data-backed PPC strategy and native-platform execution</p>
             <h1>{activeModule}</h1>
           </div>
 

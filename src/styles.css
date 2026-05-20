@@ -1,6 +1,6 @@
 :root {
   color: #172033;
-  background: #eef1f4;
+  background: #e9edf2;
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-synthesis: none;
@@ -26,8 +26,8 @@ textarea {
 
 button {
   align-items: center;
-  background: #f8fafb;
-  border: 1px solid #ccd5df;
+  background: #f9fbfc;
+  border: 1px solid #c6d0dc;
   border-radius: 8px;
   color: #172033;
   cursor: pointer;
@@ -84,8 +84,8 @@ h3 {
 }
 
 .sidebar {
-  background: #f7f8fa;
-  border-right: 1px solid #d8dee7;
+  background: #101827;
+  border-right: 1px solid #243145;
   display: flex;
   flex-direction: column;
   gap: 28px;
@@ -100,7 +100,7 @@ h3 {
 
 .brand-mark {
   align-items: center;
-  background: #0b746d;
+  background: #0e7f74;
   border-radius: 8px;
   color: #f8fbfa;
   display: inline-flex;
@@ -110,8 +110,14 @@ h3 {
 }
 
 .brand-lockup strong {
+  color: #f4f7fb;
   display: block;
   font-size: 0.98rem;
+}
+
+.sidebar .brand-lockup span,
+.sidebar .native-setup span {
+  color: #a9b6c8;
 }
 
 .brand-lockup span,
@@ -138,26 +144,27 @@ h3 {
 .nav-item {
   background: transparent;
   border-color: transparent;
+  color: #cbd5e1;
   justify-content: flex-start;
   width: 100%;
 }
 
 .nav-item.active {
-  background: #e7f2f0;
-  border-color: #b9d8d3;
-  color: #075e58;
+  background: #172436;
+  border-color: #2d465f;
+  color: #6ee7da;
 }
 
 .native-setup {
-  background: #eef2f5;
-  border: 1px solid #d8dee7;
+  background: #172436;
+  border: 1px solid #2d465f;
   border-radius: 8px;
   margin-top: auto;
   padding: 14px;
 }
 
 .native-setup p {
-  color: #243044;
+  color: #e6edf6;
   font-size: 0.8rem;
   font-weight: 800;
   letter-spacing: 0;
@@ -167,7 +174,7 @@ h3 {
 
 .main-stage {
   min-width: 0;
-  padding: 24px;
+  padding: 24px 28px;
 }
 
 .topbar {
@@ -240,7 +247,8 @@ h3 {
 .campaign-book,
 .work-surface,
 .side-panel,
-.forecast-box {
+.forecast-box,
+.execution-panel {
   background: #fbfcfd;
   border: 1px solid #dce3eb;
   border-radius: 8px;
@@ -249,10 +257,14 @@ h3 {
 }
 
 .module-hero {
+  align-items: stretch;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) 260px;
   padding: 26px;
 }
 
-.module-hero > p,
+.module-hero p,
 .section-heading p,
 .forecast-box > p {
   color: #687386;
@@ -264,17 +276,140 @@ h3 {
 }
 
 .module-hero h2 {
-  font-size: 1.7rem;
+  font-size: 2.15rem;
   line-height: 1.14;
-  max-width: 760px;
+  max-width: 860px;
 }
 
-.module-hero > span {
+.module-hero span {
   color: #4f5f73;
   display: block;
   line-height: 1.55;
   margin-top: 12px;
-  max-width: 760px;
+  max-width: 830px;
+}
+
+.strategy-score-card {
+  background: #111827;
+  border-radius: 8px;
+  color: #f7fbfb;
+  display: grid;
+  min-height: 180px;
+  padding: 20px;
+}
+
+.strategy-score-card p {
+  color: #9fb4c8;
+}
+
+.strategy-score-card strong {
+  align-self: center;
+  color: #6ee7da;
+  display: block;
+  font-size: 3.4rem;
+  line-height: 1;
+}
+
+.strategy-score-card span {
+  color: #c9d5e3;
+  font-size: 0.9rem;
+  margin-top: 0;
+}
+
+.intelligence-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.intelligence-card {
+  background: #fbfcfd;
+  border: 1px solid #dce3eb;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  min-height: 154px;
+  padding: 16px;
+}
+
+.intelligence-card div {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.intelligence-card p,
+.rationale-grid p {
+  color: #687386;
+  font-size: 0.75rem;
+  font-weight: 850;
+  letter-spacing: 0;
+  margin-bottom: 0;
+  text-transform: uppercase;
+}
+
+.intelligence-card strong {
+  color: #111827;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.intelligence-card span {
+  color: #536275;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.intelligence-card em {
+  align-self: end;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.76rem;
+  font-style: normal;
+  font-weight: 850;
+  justify-self: start;
+  padding: 6px 9px;
+}
+
+.grade-strong em {
+  background: #e4f6f2;
+  color: #087266;
+}
+
+.grade-review em {
+  background: #fff5dc;
+  color: #986100;
+}
+
+.grade-limited em {
+  background: #eef2f7;
+  color: #405067;
+}
+
+.rationale-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.rationale-grid article {
+  background: #172033;
+  border: 1px solid #283750;
+  border-radius: 8px;
+  min-height: 132px;
+  padding: 18px;
+}
+
+.rationale-grid p {
+  color: #92a4ba;
+}
+
+.rationale-grid h3 {
+  color: #f5f8fb;
+  font-size: 1.03rem;
+  line-height: 1.45;
+  margin-bottom: 0;
+  margin-top: 10px;
 }
 
 .hero-actions {
@@ -293,7 +428,8 @@ button.secondary {
 .campaign-book,
 .work-surface,
 .side-panel,
-.forecast-box {
+.forecast-box,
+.execution-panel {
   padding: 20px;
 }
 
@@ -381,7 +517,7 @@ td {
 }
 
 th {
-  color: #64748b;
+  color: #536275;
   font-size: 0.74rem;
   font-weight: 850;
   text-transform: uppercase;
@@ -392,6 +528,49 @@ td {
   color: #273449;
   font-size: 0.9rem;
   line-height: 1.4;
+}
+
+td:first-child {
+  color: #0c6760;
+  font-weight: 850;
+}
+
+.execution-panel ol {
+  counter-reset: steps;
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.execution-panel li {
+  align-items: center;
+  background: #f4f7f8;
+  border: 1px solid #dce5ea;
+  border-radius: 8px;
+  color: #2a374b;
+  counter-increment: steps;
+  display: grid;
+  font-size: 0.94rem;
+  gap: 12px;
+  grid-template-columns: 34px minmax(0, 1fr);
+  line-height: 1.45;
+  padding: 12px;
+}
+
+.execution-panel li::before {
+  align-items: center;
+  background: #0b746d;
+  border-radius: 8px;
+  color: #f8fbfa;
+  content: counter(steps);
+  display: inline-flex;
+  font-size: 0.84rem;
+  font-weight: 850;
+  height: 30px;
+  justify-content: center;
+  width: 30px;
 }
 
 .planner-side {
@@ -681,12 +860,18 @@ td {
     grid-template-columns: 1fr;
   }
 
+  .module-hero,
+  .rationale-grid {
+    grid-template-columns: 1fr;
+  }
+
   .capability-stack {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .book-grid,
-  .kpi-strip {
+  .kpi-strip,
+  .intelligence-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -715,8 +900,17 @@ td {
   .book-grid,
   .kpi-strip,
   .capability-stack,
+  .intelligence-grid,
   .question-board {
     grid-template-columns: 1fr;
+  }
+
+  .module-hero h2 {
+    font-size: 1.7rem;
+  }
+
+  .strategy-score-card {
+    min-height: 150px;
   }
 
   .question-list {

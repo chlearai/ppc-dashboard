@@ -2,8 +2,11 @@ import { useMemo, useState } from 'react';
 import {
   architectureRows,
   capabilityCards,
+  executionChecklist,
+  intelligenceMetrics,
   intakeQuestions,
   planSections,
+  strategyRationale,
 } from '../data/strategy';
 
 export function CampaignArchitect() {
@@ -29,19 +32,49 @@ export function CampaignArchitect() {
     <section className="architect-grid">
       <div className="planner-main">
         <div className="module-hero">
-          <p>Campaign Architect</p>
-          <h2>Build a media plan and campaign book before launch</h2>
-          <span>
-            The AI asks for business context, pulls platform data where available, then creates a build-ready plan for
-            Google Ads and Meta Ads.
-          </span>
-          <div className="hero-actions">
-            <button type="button">Start guided intake</button>
-            <button className="secondary" onClick={exportCampaignBook} type="button">
-              Export PDF
-            </button>
+          <div>
+            <p>Campaign Architect</p>
+            <h2>Strategy an expert can trust. Execution a junior operator can follow.</h2>
+            <span>
+              The AI builds a data-backed Google and Meta media plan, explains the logic, labels confidence, and turns
+              the plan into native-platform build steps.
+            </span>
+            <div className="hero-actions">
+              <button type="button">Start guided intake</button>
+              <button className="secondary" onClick={exportCampaignBook} type="button">
+                Export campaign book
+              </button>
+            </div>
+          </div>
+
+          <div className="strategy-score-card">
+            <p>Strategy score</p>
+            <strong>87%</strong>
+            <span>Strong enough for launch review after 3 data gaps are resolved.</span>
           </div>
         </div>
+
+        <section className="intelligence-grid" aria-label="Strategy intelligence summary">
+          {intelligenceMetrics.map((metric) => (
+            <article className={`intelligence-card grade-${metric.grade.toLowerCase()}`} key={metric.label}>
+              <div>
+                <p>{metric.label}</p>
+                <strong>{metric.value}</strong>
+              </div>
+              <span>{metric.detail}</span>
+              <em>{metric.grade}</em>
+            </article>
+          ))}
+        </section>
+
+        <section className="rationale-grid">
+          {strategyRationale.map((item) => (
+            <article key={item.label}>
+              <p>{item.label}</p>
+              <h3>{item.text}</h3>
+            </article>
+          ))}
+        </section>
 
         <div className="intake-panel">
           <div className="section-heading">
@@ -80,7 +113,7 @@ export function CampaignArchitect() {
           <div className="section-heading">
             <div>
               <p>Campaign architecture</p>
-              <h2>Recommended platform structure</h2>
+              <h2>Build-ready structure with expert logic</h2>
             </div>
           </div>
 
@@ -113,6 +146,20 @@ export function CampaignArchitect() {
             </table>
           </div>
         </div>
+
+        <section className="execution-panel">
+          <div className="section-heading">
+            <div>
+              <p>Operator handoff</p>
+              <h2>Junior-safe execution steps</h2>
+            </div>
+          </div>
+          <ol>
+            {executionChecklist.map((step) => (
+              <li key={step}>{step}</li>
+            ))}
+          </ol>
+        </section>
       </div>
 
       <aside className="planner-side">

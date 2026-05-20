@@ -5,7 +5,7 @@ import {
   CheckCircle2,
   CircleDollarSign,
   FileText,
-  LineChart,
+  Gauge,
   Megaphone,
   Radar,
   Search,
@@ -43,8 +43,15 @@ export type ArchitectureRow = {
   budget: string;
 };
 
+export type IntelligenceMetric = {
+  label: string;
+  value: string;
+  detail: string;
+  grade: 'Strong' | 'Review' | 'Limited';
+};
+
 export const navItems = [
-  { label: 'Command Center', icon: BarChart3 },
+  { label: 'Strategy Console', icon: BarChart3 },
   { label: 'Campaign Architect', icon: BookOpenCheck },
   { label: 'Approval Queue', icon: ShieldCheck },
   { label: 'Research Library', icon: Radar },
@@ -95,40 +102,90 @@ export const recommendations: Recommendation[] = [
 export const architectureRows: ArchitectureRow[] = [
   {
     platform: 'Meta Ads',
-    campaign: 'Prospecting | Advantage Sales',
+    campaign: 'M1 Prospecting | Broad Learning',
     objective: 'Conversions',
     structure: '1 campaign, 3 ad sets, 12 ads',
-    targeting: 'Broad 25 to 54, interest cluster, lookalike or engaged visitor retargeting',
+    targeting: 'Broad 25 to 54, value event optimized, exclusions for buyers and low-quality leads',
     creative: 'Problem hook, proof hook, founder story, offer-led comparison',
-    budget: '45% of paid social budget',
+    budget: '45% of paid social budget until 50 conversions',
   },
   {
     platform: 'Meta Ads',
-    campaign: 'Retargeting | Proof and Offer',
+    campaign: 'M2 Retargeting | Proof and Objections',
     objective: 'Conversions',
     structure: '1 campaign, 2 ad sets, 8 ads',
-    targeting: 'Website visitors, video viewers, lead form openers, engaged Instagram users',
-    creative: 'Testimonials, objection handling, limited-time offer, case study carousel',
-    budget: '15% of paid social budget',
+    targeting: '7-day high intent, 30-day engaged users, lead form openers, pricing page visitors',
+    creative: 'Testimonials, objection handling, comparison, case study carousel',
+    budget: '15% with frequency guardrail at 3.2',
   },
   {
     platform: 'Google Ads',
-    campaign: 'Search | High Intent',
+    campaign: 'G1 Search | High Intent Non Brand',
     objective: 'Leads or purchases',
-    structure: '1 campaign, 4 ad groups, 3 RSAs per ad group',
-    targeting: 'Exact and phrase keywords grouped by buying intent',
-    creative: 'Outcome-led RSA, price or proof RSA, competitor alternative RSA',
-    budget: '30% of search budget',
+    structure: '1 campaign, 5 ad groups, 3 RSAs per ad group',
+    targeting: 'Exact and phrase keywords grouped by commercial intent and landing page match',
+    creative: 'Outcome-led RSA, proof RSA, comparison RSA, sitelinks by pain point',
+    budget: '30% of Google budget with CPA cap',
   },
   {
     platform: 'Google Ads',
-    campaign: 'PMax | Conversion Expansion',
+    campaign: 'G2 PMax | Controlled Expansion',
     objective: 'Incremental conversions',
     structure: '1 campaign, 3 asset groups',
-    targeting: 'Audience signals from converters, website visitors, competitor intent, in-market segments',
+    targeting: 'Converter signals, website visitors, competitor intent, in-market segments, brand exclusions where possible',
     creative: 'Asset group by persona with image, short video, headlines, descriptions, sitelinks',
-    budget: '25% of Google budget after search baseline',
+    budget: '25% after search baseline proves stable',
   },
+];
+
+export const intelligenceMetrics: IntelligenceMetric[] = [
+  {
+    label: 'Strategy Confidence',
+    value: '87%',
+    detail: '12 account signals, keyword forecast, creative fatigue, funnel gaps',
+    grade: 'Strong',
+  },
+  {
+    label: 'Forecast Coverage',
+    value: '64%',
+    detail: 'Search forecast is strong. Meta conversion forecast remains directional.',
+    grade: 'Review',
+  },
+  {
+    label: 'Execution Complexity',
+    value: 'Low',
+    detail: '31 checklist steps, platform-native build, approval gates on changes',
+    grade: 'Strong',
+  },
+  {
+    label: 'Data Gaps',
+    value: '3',
+    detail: 'Need Meta pixel quality, lead value, and competitor CPC sample',
+    grade: 'Limited',
+  },
+];
+
+export const strategyRationale = [
+  {
+    label: 'Why this architecture wins',
+    text: 'It separates brand protection, high-intent capture, learning exploration, and proof-led retargeting so each budget has a clear job.',
+  },
+  {
+    label: 'What an expert will check',
+    text: 'Budget learning velocity, conversion event quality, search term leakage, creative fatigue, audience overlap, and PMax cannibalization.',
+  },
+  {
+    label: 'What a junior operator should do',
+    text: 'Follow the campaign book, build each campaign in native Google and Meta dashboards, then return here for QA and approval.',
+  },
+];
+
+export const executionChecklist = [
+  'Create campaigns using the exact naming convention and objective.',
+  'Build ad sets or ad groups from the architecture table without changing budget split.',
+  'Add required exclusions, negatives, conversion event, and location settings.',
+  'Upload creative by angle: problem, proof, comparison, objection handling.',
+  'Run QA checklist, then submit the plan for strategist approval.',
 ];
 
 export const planSections: PlanSection[] = [
@@ -167,8 +224,8 @@ export const planSections: PlanSection[] = [
 export const capabilityCards = [
   {
     icon: BrainCircuit,
-    title: 'AI Strategy Intake',
-    text: 'Asks business questions before it creates a media plan.',
+    title: 'Strategic Reasoning',
+    text: 'Explains why the plan beats a normal platform setup.',
   },
   {
     icon: Search,
@@ -198,7 +255,7 @@ export const kpiCards = [
   { label: 'Optimization Actions', value: '18', note: '6 can be approved today', icon: Sparkles },
   { label: 'Wasted Spend Found', value: '₹42.8k', note: 'Search terms and fatigued creatives', icon: CircleDollarSign },
   { label: 'Plans in Review', value: '3', note: 'Google Search, Meta Prospecting, PMax', icon: FileText },
-  { label: 'Forecast Quality', value: '72%', note: 'Improves after platform data sync', icon: LineChart },
+  { label: 'Strategy Score', value: '87%', note: 'Evidence-backed architecture quality', icon: Gauge },
 ];
 
 export const approvalActions = [

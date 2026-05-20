@@ -2,11 +2,11 @@
 
 ## Register
 
-Product UI. Quiet, operational, dense enough for real work.
+Product UI. Premium operational SaaS, dense enough for expert data work, calm enough for junior execution.
 
 ## Scene
 
-A founder or marketing lead reviews ad performance on a laptop during the workday, needs fast decisions, and does not want platform jargon.
+A senior PPC lead reviews campaign strategy on a large monitor during the workday, checks whether the AI has stronger reasoning than their own plan, then hands approved steps to a junior operator.
 
 ## Color Strategy
 
@@ -27,9 +27,9 @@ Use the system UI stack. Fixed type scale. No display fonts. Labels should be co
 
 ## Components
 
-- Side navigation for product modules
-- Dense panels for operational surfaces
-- Status pills for confidence, platform, and risk
+- Dark side navigation with clear product ownership
+- Dense intelligence panels for data-backed strategy
+- Status pills for confidence, platform, risk, and source quality
 - Tables for campaign architecture
 - Inline approval controls
 - Print-friendly campaign book export
@@ -47,4 +47,4 @@ Primary flows should be progressive:
 
 ## Content Rules
 
-Use plain business language first, technical terms second. Explain why a campaign structure exists. Label all estimates with source and confidence.
+Use expert PPC language where it earns trust, then translate each decision into junior-friendly execution steps. Explain why a campaign structure exists. Label all estimates with source and confidence.
