@@ -1,31 +1,19 @@
 {
-  "name": "ppc-dashboard",
+  "name": "ppc-dashboard-workspace",
   "private": true,
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "dev": "npm --workspace frontend run dev --",
+    "dev:frontend": "npm --workspace frontend run dev --",
+    "dev:backend": "npm --workspace backend run dev",
+    "build": "npm --workspace frontend run build && npm --workspace backend run build",
+    "lint": "npm --workspace frontend run lint && npm --workspace backend run lint",
+    "test:e2e": "npm --workspace frontend run test:e2e",
+    "start:backend": "npm --workspace backend run start"
   },
-  "dependencies": {
-    "lucide-react": "^0.468.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "recharts": "^2.13.3"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-react": "^5.0.0",
-    "@eslint/js": "^9.15.0",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
-    "eslint": "^9.15.0",
-    "eslint-plugin-react-hooks": "^5.0.0",
-    "eslint-plugin-react-refresh": "^0.4.14",
-    "globals": "^15.12.0",
-    "typescript": "~5.6.2",
-    "typescript-eslint": "^8.15.0",
-    "vite": "^8.0.13"
-  }
+  "workspaces": [
+    "frontend",
+    "backend"
+  ]
 }
