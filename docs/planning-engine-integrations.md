@@ -105,6 +105,21 @@ Recommended control path:
 
 `AI intake -> data connectors -> plan generator -> simulation panel -> review editor -> approval queue -> campaign book export`
 
+## Project Workspace Model
+
+The app should behave like a chat workspace. Each project owns its own context and tool connections.
+
+Project-level settings:
+
+- Google Ads connector or Google Ads MCP server.
+- Meta Ads connector or Meta Marketing API credentials.
+- Website URL and landing page crawl settings.
+- Optional MCP tools or custom APIs.
+- Brand, offer, product, and campaign history context.
+- Approval rules for Act mode.
+
+The chat UI should expose connected tools near the project selector, with a small project setup panel for configuring connectors. This keeps the main interaction simple while making it clear which data the assistant can access.
+
 ## AI Revenue Chat
 
 The chat interface should feel like a simple ChatGPT-style assistant for campaigns, with two modes:

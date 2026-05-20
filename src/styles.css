@@ -1375,6 +1375,12 @@ td:first-child {
   width: 40px;
 }
 
+.header-icon.active {
+  background: #172033;
+  border-color: #172033;
+  color: #f8fbfa;
+}
+
 .tool-strip {
   display: flex;
   gap: 8px;
@@ -1403,6 +1409,91 @@ td:first-child {
 .tool-strip em {
   color: #687386;
   font-style: normal;
+}
+
+.project-setup-panel {
+  background: #ffffff;
+  border: 1px solid #dce3eb;
+  border-radius: 12px;
+  box-shadow: 0 18px 45px rgba(26, 37, 56, 0.08);
+  margin: 0 22px 10px;
+  padding: 18px;
+}
+
+.project-setup-head {
+  align-items: start;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.project-setup-head p {
+  color: #687386;
+  font-size: 0.76rem;
+  font-weight: 850;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.project-setup-head h2 {
+  font-size: 1.05rem;
+  margin-bottom: 4px;
+}
+
+.project-setup-head span {
+  color: #536275;
+  display: block;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  max-width: 660px;
+}
+
+.connector-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.connector-grid article {
+  background: #f6f8fa;
+  border: 1px solid #dce3eb;
+  border-radius: 8px;
+  display: grid;
+  gap: 9px;
+  padding: 14px;
+}
+
+.connector-grid article > div {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.connector-grid svg {
+  color: #0b746d;
+}
+
+.connector-grid span {
+  background: #edf7f4;
+  border-radius: 999px;
+  color: #07665f;
+  font-size: 0.74rem;
+  font-weight: 850;
+  justify-self: start;
+  padding: 5px 8px;
+}
+
+.connector-grid p {
+  color: #536275;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin-bottom: 0;
+}
+
+.connector-grid button {
+  justify-content: center;
+  margin-top: 4px;
 }
 
 .conversation {
@@ -1661,6 +1752,14 @@ td:first-child {
     grid-template-columns: 1fr;
   }
 
+  .project-setup-head {
+    display: grid;
+  }
+
+  .connector-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .mode-switch,
   .header-icon {
     justify-self: start;
@@ -1674,9 +1773,19 @@ td:first-child {
 
   .tool-strip,
   .chatgpt-header,
+  .project-setup-panel,
   .composer-area {
     padding-left: 16px;
     padding-right: 16px;
+  }
+
+  .project-setup-panel {
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+
+  .connector-grid {
+    grid-template-columns: 1fr;
   }
 
   .assistant-intro {

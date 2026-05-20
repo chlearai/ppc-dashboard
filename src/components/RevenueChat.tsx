@@ -3,6 +3,7 @@ import {
   Check,
   ChevronDown,
   DatabaseZap,
+  ExternalLink,
   Globe,
   MessageSquarePlus,
   MoreHorizontal,
@@ -30,15 +31,16 @@ const chats = [
 ];
 
 const tools = [
-  { label: 'Google Ads', status: 'Connected', icon: DatabaseZap },
-  { label: 'Meta Ads', status: 'Connected', icon: DatabaseZap },
-  { label: 'Website', status: 'Connected', icon: Globe },
-  { label: 'MCP/API', status: 'Project scoped', icon: Settings },
+  { label: 'Google Ads', status: 'Connected', detail: 'Read + draft actions', icon: DatabaseZap },
+  { label: 'Meta Ads', status: 'Connected', detail: 'Read + draft actions', icon: DatabaseZap },
+  { label: 'Website', status: 'Connected', detail: 'Landing page context', icon: Globe },
+  { label: 'MCP/API', status: 'Project scoped', detail: 'Google Ads MCP, Meta API, custom tools', icon: Settings },
 ];
 
 export function RevenueChat() {
   const [mode, setMode] = useState<ChatMode>('Ask');
   const [draft, setDraft] = useState(chatPrompts[0].prompt);
+  const [showSetup, setShowSetup] = useState(false);
 
   return (
     <main className="chatgpt-shell">
@@ -106,7 +108,12 @@ export function RevenueChat() {
             ))}
           </div>
 
-          <button className="header-icon" type="button" aria-label="Project settings">
+          <button
+            className={showSetup ? 'header-icon active' : 'header-icon'}
+            onClick={() => setShowSetup((current) => !current)}
+            type="button"
+            aria-label="Project settings"
+          >
             <MoreHorizontal size={18} />
           </button>
         </header>
@@ -124,6 +131,43 @@ export function RevenueChat() {
             );
           })}
         </div>
+
+        {showSetup && (
+          <section className="project-setup-panel" aria-label="Project setup">
+            <div className="project-setup-head">
+              <div>
+                <p>Project setup</p>
+                <h2>Connect tools for Crystal Hues PPC</h2>
+                <span>Each project keeps its own Google Ads, Meta Ads, MCP, API, website, and context settings.</span>
+              </div>
+              <button type="button">
+                Create new project
+                <Plus size={16} />
+              </button>
+            </div>
+
+            <div className="connector-grid">
+              {tools.map((tool) => {
+                const Icon = tool.icon;
+
+                return (
+                  <article key={tool.label}>
+                    <div>
+                      <Icon size={18} />
+                      <strong>{tool.label}</strong>
+                    </div>
+                    <span>{tool.status}</span>
+                    <p>{tool.detail}</p>
+                    <button className="ghost-button" type="button">
+                      Configure
+                      <ExternalLink size={15} />
+                    </button>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         <section className="conversation">
           <div className="assistant-intro">
