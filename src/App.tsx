@@ -1,92 +1,91 @@
-import { CalendarDays, Filter, LineChart, Target } from 'lucide-react';
-import { CampaignTable } from './components/CampaignTable';
-import { MetricCard } from './components/MetricCard';
-import { PerformanceChart } from './components/PerformanceChart';
-import { campaigns } from './data/campaigns';
-import { formatCurrency, formatNumber, formatPercent } from './lib/format';
+import { useState } from 'react';
+import { ArrowUpRight, Bell, CheckCircle2, Command, PanelLeft } from 'lucide-react';
+import { CampaignArchitect } from './components/CampaignArchitect';
+import { OperatorDashboard } from './components/OperatorDashboard';
+import { navItems } from './data/strategy';
 
 function App() {
-  const totals = campaigns.reduce(
-    (acc, campaign) => ({
-      spend: acc.spend + campaign.spend,
-      revenue: acc.revenue + campaign.revenue,
-      clicks: acc.clicks + campaign.clicks,
-      conversions: acc.conversions + campaign.conversions,
-      impressions: acc.impressions + campaign.impressions,
-    }),
-    { spend: 0, revenue: 0, clicks: 0, conversions: 0, impressions: 0 },
-  );
-
-  const roas = totals.revenue / totals.spend;
-  const conversionRate = (totals.conversions / totals.clicks) * 100;
+  const [activeModule, setActiveModule] = useState('Campaign Architect');
 
   return (
-    <main className="dashboard">
-      <header className="topbar">
-        <div>
-          <p className="eyebrow">Paid marketing command center</p>
-          <h1>PPC Dashboard</h1>
+    <main className="app-shell">
+      <aside className="sidebar">
+        <div className="brand-lockup">
+          <div className="brand-mark">
+            <Command size={20} />
+          </div>
+          <div>
+            <strong>AI PPC Operator</strong>
+            <span>Google Ads + Meta Ads</span>
+          </div>
         </div>
 
-        <div className="toolbar">
-          <button type="button">
-            <CalendarDays size={18} />
-            Last 7 days
-          </button>
-          <button type="button">
-            <Filter size={18} />
-            Filters
-          </button>
+        <nav aria-label="Primary navigation">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeModule === item.label;
+
+            return (
+              <button
+                className={isActive ? 'nav-item active' : 'nav-item'}
+                key={item.label}
+                onClick={() => setActiveModule(item.label)}
+                type="button"
+              >
+                <Icon size={18} />
+                {item.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="native-setup">
+          <p>Native setup model</p>
+          <span>Accounts stay configured inside Google Ads and Meta Ads. This app plans, reviews, and approves.</span>
         </div>
-      </header>
+      </aside>
 
-      <section className="metrics-grid" aria-label="PPC summary metrics">
-        <MetricCard label="Ad spend" value={formatCurrency(totals.spend)} change="+8.4% vs last week" />
-        <MetricCard
-          label="Revenue"
-          value={formatCurrency(totals.revenue)}
-          change="+14.2% vs last week"
-          tone="positive"
-        />
-        <MetricCard label="ROAS" value={`${roas.toFixed(2)}x`} change="+0.32x improvement" tone="positive" />
-        <MetricCard
-          label="Conversion rate"
-          value={formatPercent(conversionRate)}
-          change={`${formatNumber(totals.conversions)} conversions`}
-        />
-      </section>
+      <section className="main-stage">
+        <header className="topbar">
+          <button className="icon-button" type="button" aria-label="Collapse sidebar">
+            <PanelLeft size={18} />
+          </button>
 
-      <section className="content-grid">
-        <PerformanceChart />
-
-        <aside className="panel insights-panel">
-          <div className="panel-heading">
-            <div>
-              <p>Focus</p>
-              <h2>Optimization queue</h2>
-            </div>
+          <div className="page-title">
+            <p>Professional campaign planning and optimization</p>
+            <h1>{activeModule}</h1>
           </div>
 
-          <div className="insight-list">
-            <article>
-              <Target size={20} />
-              <div>
-                <h3>Scale brand search</h3>
-                <p>ROAS is above target with stable volume. Increase budget cap by 12%.</p>
-              </div>
-            </article>
-            <article>
-              <LineChart size={20} />
-              <div>
-                <h3>Review LinkedIn CPC</h3>
-                <p>High spend with low conversion density. Refresh audience and creative tests.</p>
-              </div>
-            </article>
+          <div className="top-actions">
+            <span className="sync-pill">
+              <CheckCircle2 size={16} />
+              Approval mode on
+            </span>
+            <button className="icon-button" type="button" aria-label="Notifications">
+              <Bell size={18} />
+            </button>
+            <button type="button">
+              Open build guide
+              <ArrowUpRight size={16} />
+            </button>
           </div>
-        </aside>
-      </section>
+        </header>
 
-      <CampaignTable campaigns={campaigns} />
+        <nav className="mobile-module-switcher" aria-label="Mobile module navigation">
+          {navItems.map((item) => (
+            <button
+              className={activeModule === item.label ? 'active' : ''}
+              key={item.label}
+              onClick={() => setActiveModule(item.label)}
+              type="button"
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
+
+        {activeModule === 'Campaign Architect' ? <CampaignArchitect /> : <OperatorDashboard />}
+      </section>
     </main>
   );
 }
