@@ -1,16 +1,35 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 
-test('renders the AI revenue chat workspace', async ({ page }) => {
+async function login(page: Page) {
+  await page.goto('/');
+  await page.getByLabel('Work email').fill('admin@adops.test');
+  await page.getByLabel('Password').fill('demo123');
+  await page.getByRole('button', { name: 'Sign in' }).click();
+}
+
+test('shows the demo SaaS login screen before the workspace', async ({ page }) => {
   await page.goto('/');
 
+  await expect(page.getByRole('heading', { name: 'AdOps Intelligence' })).toBeVisible();
+  await expect(page.getByLabel('Work email')).toBeVisible();
+  await expect(page.getByLabel('Password')).toBeVisible();
+  await expect(page.getByText('admin@adops.test')).toBeVisible();
+  await expect(page.getByText('demo123')).toBeVisible();
+});
+
+test('renders the AI revenue chat workspace', async ({ page }) => {
+  await login(page);
+
   await expect(page.getByText('AdOps Intelligence')).toBeVisible();
+  await expect(page.getByText('Shailesh Kumar')).toBeVisible();
+  await expect(page.getByLabel('Signed in user').getByText('Workspace Admin')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Ask', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Act', exact: true })).toBeVisible();
   await expect(page.getByLabel('Connected project tools')).toBeVisible();
 });
 
 test('opens Act mode and project setup controls', async ({ page }) => {
-  await page.goto('/');
+  await login(page);
 
   await page.getByRole('button', { name: 'Act', exact: true }).click();
   await expect(page.getByText('Final approval required')).toBeVisible();
@@ -19,4 +38,27 @@ test('opens Act mode and project setup controls', async ({ page }) => {
   await page.getByRole('button', { name: 'Project settings' }).click();
   await expect(page.getByLabel('Project setup')).toBeVisible();
   await expect(page.getByRole('button', { name: /Create new project/ })).toBeVisible();
+});
+
+test('opens the user module and returns to chat', async ({ page }) => {
+  await login(page);
+
+  await page.getByRole('button', { name: 'Users' }).click();
+
+  await expect(page.getByRole('heading', { name: 'User Management' })).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: 'User' })).toBeVisible();
+  await expect(page.getByText('Media Buyer')).toBeVisible();
+  await expect(page.getByText('2 projects')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Back to AI chat' }).click();
+  await expect(page.getByRole('heading', { name: 'How can I help with your campaigns?' })).toBeVisible();
+});
+
+test('logs out of the demo SaaS session', async ({ page }) => {
+  await login(page);
+
+  await page.getByRole('button', { name: 'Logout' }).click();
+
+  await expect(page.getByLabel('Work email')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Sign in' })).toBeVisible();
 });

@@ -3,6 +3,41 @@ import http from 'node:http';
 const HOST = process.env.HOST || '127.0.0.1';
 const PORT = Number(process.env.PORT || 8787);
 
+const demoTokenPrefix = 'demo-session';
+
+const users = [
+  {
+    id: 'user_admin',
+    name: 'Shailesh Kumar',
+    email: 'admin@adops.test',
+    role: 'Workspace Admin',
+    status: 'Active',
+    lastActive: 'Today',
+    projectAccess: ['Crystal Hues PPC', 'Demo Ecommerce', 'Lead Gen Test'],
+    password: 'demo123',
+  },
+  {
+    id: 'user_media_buyer',
+    name: 'Aarav Mehta',
+    email: 'buyer@adops.test',
+    role: 'Media Buyer',
+    status: 'Active',
+    lastActive: 'Yesterday',
+    projectAccess: ['Crystal Hues PPC', 'Demo Ecommerce'],
+    password: 'demo123',
+  },
+  {
+    id: 'user_analyst',
+    name: 'Nisha Rao',
+    email: 'analyst@adops.test',
+    role: 'Analyst',
+    status: 'Invited',
+    lastActive: 'Invitation pending',
+    projectAccess: ['Crystal Hues PPC'],
+    password: 'demo123',
+  },
+];
+
 const projects = [
   {
     id: 'project_crystal_hues',
@@ -134,10 +169,27 @@ function jsonResponse(response, statusCode, payload) {
   response.writeHead(statusCode, {
     'Access-Control-Allow-Origin': process.env.CORS_ORIGIN || 'http://127.0.0.1:5173',
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Authorization,Content-Type',
     'Content-Type': 'application/json',
   });
   response.end(JSON.stringify(payload));
+}
+
+function publicUser(user) {
+  const { password, ...safeUser } = user;
+  return safeUser;
+}
+
+function getAuthorizedUser(request) {
+  const authorization = request.headers.authorization || '';
+  const token = authorization.startsWith('Bearer ') ? authorization.slice('Bearer '.length) : '';
+
+  if (!token.startsWith(demoTokenPrefix)) {
+    return null;
+  }
+
+  const userId = token.replace(`${demoTokenPrefix}-`, '');
+  return users.find((user) => user.id === userId) || users[0];
 }
 
 function parseBody(request) {
@@ -183,6 +235,48 @@ const server = http.createServer(async (request, response) => {
 
   if (request.method === 'GET' && requestUrl.pathname === '/api/projects') {
     jsonResponse(response, 200, { projects });
+    return;
+  }
+
+  if (request.method === 'POST' && requestUrl.pathname === '/api/auth/login') {
+    const body = await parseBody(request);
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+    const password = typeof body.password === 'string' ? body.password : '';
+    const user = users.find((candidate) => candidate.email === email && candidate.password === password);
+
+    if (!user) {
+      jsonResponse(response, 401, { error: 'Invalid demo credentials' });
+      return;
+    }
+
+    jsonResponse(response, 200, {
+      token: `${demoTokenPrefix}-${user.id}`,
+      user: publicUser(user),
+    });
+    return;
+  }
+
+  if (request.method === 'GET' && requestUrl.pathname === '/api/auth/me') {
+    const user = getAuthorizedUser(request);
+
+    if (!user) {
+      jsonResponse(response, 401, { error: 'Unauthorized' });
+      return;
+    }
+
+    jsonResponse(response, 200, { user: publicUser(user) });
+    return;
+  }
+
+  if (request.method === 'GET' && requestUrl.pathname === '/api/users') {
+    const user = getAuthorizedUser(request);
+
+    if (!user) {
+      jsonResponse(response, 401, { error: 'Unauthorized' });
+      return;
+    }
+
+    jsonResponse(response, 200, { users: users.map(publicUser) });
     return;
   }
 

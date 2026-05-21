@@ -43,6 +43,21 @@ export type Approval = {
   expectedImpact: string;
 };
 
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  lastActive: string;
+  projectAccess: string[];
+};
+
+export type LoginResponse = {
+  token: string;
+  user: User;
+};
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8787';
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -62,6 +77,23 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  login: (email: string, password: string) =>
+    request<LoginResponse>('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    }),
+  getCurrentUser: (token: string) =>
+    request<{ user: User }>('/api/auth/me', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  getUsers: (token: string) =>
+    request<{ users: User[] }>('/api/users', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
   getProjects: () => request<{ projects: Project[] }>('/api/projects'),
   getChats: (projectId: string) => request<{ chats: Chat[] }>(`/api/chats?projectId=${projectId}`),
   getConnectors: (projectId: string) => request<{ connectors: Connector[] }>(`/api/connectors?projectId=${projectId}`),

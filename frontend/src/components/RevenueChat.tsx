@@ -12,9 +12,17 @@ import {
   Settings,
   ShieldCheck,
   Sparkles,
+  LogOut,
+  Users,
 } from 'lucide-react';
 import { chatPrompts } from '../data/strategy';
-import { api, Approval, Chat, ChatMessage, ChatMode, Connector, Project } from '../lib/api';
+import { api, Approval, Chat, ChatMessage, ChatMode, Connector, Project, User } from '../lib/api';
+
+type RevenueChatProps = {
+  currentUser: User;
+  onLogout: () => void;
+  onOpenUsers: () => void;
+};
 
 const fallbackProjects: Project[] = [
   { id: 'project_crystal_hues', name: 'Crystal Hues PPC', status: 'Google + Meta connected' },
@@ -54,7 +62,7 @@ const fallbackConnectors: Connector[] = [
   },
 ];
 
-export function RevenueChat() {
+export function RevenueChat({ currentUser, onLogout, onOpenUsers }: RevenueChatProps) {
   const [mode, setMode] = useState<ChatMode>('Ask');
   const [draft, setDraft] = useState(chatPrompts[0].prompt);
   const [showSetup, setShowSetup] = useState(false);
@@ -196,6 +204,11 @@ export function RevenueChat() {
           New chat
         </button>
 
+        <button className="sidebar-nav-button" onClick={onOpenUsers} type="button">
+          <Users size={17} />
+          Users
+        </button>
+
         <section className="sidebar-section">
           <div className="sidebar-section-title">
             <span>Projects</span>
@@ -232,6 +245,16 @@ export function RevenueChat() {
             ))}
           </div>
         </section>
+
+        <section className="sidebar-account" aria-label="Signed in user">
+          <div>
+            <strong>{currentUser.name}</strong>
+            <span>{currentUser.role}</span>
+          </div>
+          <button onClick={onLogout} type="button" aria-label="Logout">
+            <LogOut size={16} />
+          </button>
+        </section>
       </aside>
 
       <section className="chatgpt-main">
@@ -248,6 +271,8 @@ export function RevenueChat() {
               </button>
             ))}
           </div>
+
+          <span className="user-role-badge">{currentUser.role}</span>
 
           <button
             className={showSetup ? 'header-icon active' : 'header-icon'}
