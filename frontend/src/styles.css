@@ -2630,3 +2630,642 @@ td:first-child {
     justify-self: end;
   }
 }
+
+/* ChatGPT-inspired product theme pass */
+:root {
+  color: #202123;
+  background: #f7f7f8;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  background: #f7f7f8;
+  color: #202123;
+  font-size: 14px;
+}
+
+button {
+  background: #ffffff;
+  border-color: #d9d9e3;
+  border-radius: 8px;
+  color: #202123;
+  font-size: 0.875rem;
+  font-weight: 600;
+  min-height: 36px;
+  padding: 0 12px;
+}
+
+button:hover {
+  background: #f7f7f8;
+  border-color: #c5c5d2;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid rgba(16, 163, 127, 0.28);
+  outline-offset: 2px;
+}
+
+h1 {
+  color: #202123;
+  font-size: 1.85rem;
+  font-weight: 680;
+  line-height: 1.15;
+}
+
+h2 {
+  color: #202123;
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+h3 {
+  color: #202123;
+  font-size: 0.92rem;
+  font-weight: 650;
+}
+
+th,
+td {
+  color: #343541;
+  font-size: 0.86rem;
+}
+
+th {
+  color: #6e6e80;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.chatgpt-shell,
+.intelligence-shell,
+.projects-shell,
+.users-shell {
+  background: #f7f7f8;
+  color: #202123;
+  grid-template-columns: 280px minmax(0, 1fr);
+}
+
+.chatgpt-sidebar,
+.users-sidebar {
+  background: #202123;
+  border-right-color: #2f3037;
+  color: #ececf1;
+  gap: 10px;
+  padding: 10px;
+}
+
+.sidebar-brand {
+  border-radius: 8px;
+  min-height: 40px;
+  padding: 6px;
+}
+
+.brand-mark-small {
+  background: #10a37f;
+  border-radius: 6px;
+  height: 30px;
+  width: 30px;
+}
+
+.sidebar-brand strong {
+  color: #ececf1;
+  font-size: 0.88rem;
+  font-weight: 650;
+}
+
+.sidebar-brand span {
+  color: #c5c5d2;
+  font-size: 0.75rem;
+}
+
+.new-chat-button,
+.sidebar-nav-button,
+.sidebar-logout {
+  background: transparent;
+  border-color: transparent;
+  border-radius: 8px;
+  color: #ececf1;
+  font-size: 0.86rem;
+  font-weight: 500;
+  justify-content: flex-start;
+  min-height: 36px;
+  padding: 0 10px;
+}
+
+.new-chat-button:hover,
+.sidebar-nav-button:hover,
+.sidebar-logout:hover,
+.chat-history button:hover,
+.project-item:hover {
+  background: #2a2b32;
+  border-color: transparent;
+}
+
+.sidebar-section {
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.sidebar-section-title {
+  color: #8e8ea0;
+  font-size: 0.7rem;
+  font-weight: 650;
+  padding: 6px 8px 2px;
+  text-transform: none;
+}
+
+.project-item,
+.chat-history button {
+  border-radius: 8px;
+  color: #ececf1;
+  font-size: 0.84rem;
+  font-weight: 500;
+  padding: 8px 10px;
+}
+
+.project-item.active {
+  background: #343541;
+  border-color: transparent;
+}
+
+.project-item small {
+  color: #acacbe;
+  font-size: 0.72rem;
+}
+
+.sidebar-account,
+.sidebar-user-card {
+  background: transparent;
+  border-color: #343541;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.sidebar-account strong,
+.sidebar-user-card strong {
+  color: #ececf1;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.sidebar-account span,
+.sidebar-user-card span,
+.sidebar-user-card small {
+  color: #acacbe;
+  font-size: 0.74rem;
+}
+
+.chatgpt-main {
+  background: #ffffff;
+}
+
+.chatgpt-header {
+  border-bottom: 1px solid #ececf1;
+  padding: 10px 18px;
+}
+
+.project-selector {
+  color: #343541;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.mode-switch {
+  background: #f7f7f8;
+  border-color: #d9d9e3;
+  padding: 3px;
+}
+
+.mode-switch button {
+  color: #565869;
+  font-size: 0.82rem;
+  min-height: 30px;
+  padding: 0 13px;
+}
+
+.mode-switch button.active {
+  background: #ffffff;
+  border-color: #d9d9e3;
+  box-shadow: 0 1px 2px rgba(32, 33, 35, 0.06);
+  color: #202123;
+}
+
+.header-icon {
+  border-color: #d9d9e3;
+  width: 36px;
+}
+
+.header-icon.active,
+.composer button {
+  background: #202123;
+  border-color: #202123;
+  color: #ffffff;
+}
+
+.user-role-badge,
+.sync-pill,
+.users-table-head span {
+  background: #f7f7f8;
+  border: 1px solid #d9d9e3;
+  color: #565869;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.tool-strip {
+  background: #ffffff;
+  border-bottom: 1px solid #ececf1;
+  padding: 8px 18px;
+}
+
+.tool-strip span {
+  background: #f7f7f8;
+  border-color: #ececf1;
+  color: #343541;
+  font-size: 0.78rem;
+  min-height: 28px;
+}
+
+.tool-strip svg,
+.approval-card svg,
+.connector-grid svg,
+.project-connector-card svg,
+.empty-connectors svg,
+.platform-split-grid svg,
+.insight-card svg,
+.campaign-alert svg,
+.user-summary-grid svg,
+.project-summary-grid svg {
+  color: #10a37f;
+}
+
+.conversation {
+  max-width: 820px;
+  padding: 34px 24px 18px;
+}
+
+.assistant-intro {
+  margin: 28px auto 36px;
+  max-width: 620px;
+}
+
+.assistant-orb {
+  background: #10a37f;
+  border-radius: 8px;
+  color: #ffffff;
+  height: 42px;
+  margin-bottom: 16px;
+  width: 42px;
+}
+
+.assistant-intro h1 {
+  font-size: 1.85rem;
+  font-weight: 650;
+}
+
+.assistant-intro p,
+.composer-note,
+.project-setup-head span,
+.connector-grid p,
+.project-connector-card p,
+.platform-split-grid p,
+.campaign-alert p,
+.users-table td span {
+  color: #6e6e80;
+}
+
+.message-row {
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.avatar {
+  background: #10a37f;
+  border-radius: 4px;
+  color: #ffffff;
+  height: 28px;
+  width: 28px;
+}
+
+.message-card {
+  border-radius: 8px;
+  font-size: 0.94rem;
+  line-height: 1.6;
+  padding: 12px 14px;
+}
+
+.user-card {
+  background: #f7f7f8;
+  color: #202123;
+}
+
+.assistant-card {
+  background: #ffffff;
+  border-color: #ececf1;
+  box-shadow: none;
+}
+
+.mode-line span,
+.mode-line em,
+.connector-grid span,
+.project-connector-card span,
+.project-connector-card em,
+.campaign-status,
+.status-active,
+.status-invited {
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.mode-line span,
+.connector-grid span,
+.project-connector-card span,
+.status-active,
+.campaign-status.efficient {
+  background: #e7f8f2;
+  color: #08765f;
+}
+
+.mode-line em,
+.status-invited,
+.campaign-status.watch {
+  background: #fff7e6;
+  color: #8a5a00;
+}
+
+.campaign-status.risk {
+  background: #fff1f0;
+  color: #a42016;
+}
+
+.project-setup-panel,
+.login-panel,
+.users-table-panel,
+.project-directory,
+.connector-management-panel,
+.platform-panel,
+.insight-panel,
+.campaign-table-panel,
+.user-summary-grid article,
+.project-summary-grid article,
+.intelligence-kpi {
+  background: #ffffff;
+  border-color: #ececf1;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.login-shell {
+  background: #f7f7f8;
+}
+
+.login-panel {
+  max-width: 420px;
+  padding: 24px;
+}
+
+.login-brand p,
+.login-copy p,
+.users-header p,
+.users-table-head p,
+.user-summary-grid span,
+.project-summary-grid span,
+.intelligence-kpi span,
+.platform-split-grid dt {
+  color: #6e6e80;
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0;
+}
+
+.login-brand h1 {
+  font-size: 1.15rem;
+}
+
+.login-copy h2 {
+  font-size: 1.35rem;
+  font-weight: 650;
+}
+
+.login-form label {
+  color: #343541;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.login-form input,
+textarea {
+  background: #ffffff;
+  border-color: #d9d9e3;
+  border-radius: 8px;
+  color: #202123;
+}
+
+.login-form button {
+  background: #10a37f;
+  border-color: #10a37f;
+  color: #ffffff;
+}
+
+.demo-credentials,
+.approval-card,
+.connector-grid article,
+.management-project,
+.project-connector-card,
+.empty-connectors,
+.platform-split-grid article,
+.campaign-alert {
+  background: #f7f7f8;
+  border-color: #ececf1;
+  border-radius: 8px;
+}
+
+.intelligence-main,
+.users-main,
+.projects-main {
+  background: #f7f7f8;
+  gap: 14px;
+  padding: 22px 24px;
+}
+
+.users-header h1 {
+  font-size: 1.85rem;
+  font-weight: 650;
+}
+
+.user-summary-grid,
+.project-summary-grid,
+.intelligence-kpi-grid,
+.project-management-grid,
+.intelligence-layout {
+  gap: 12px;
+}
+
+.user-summary-grid article,
+.project-summary-grid article,
+.intelligence-kpi {
+  min-height: 116px;
+  padding: 14px;
+}
+
+.user-summary-grid strong,
+.project-summary-grid strong,
+.intelligence-kpi strong {
+  color: #202123;
+  font-size: 1.5rem;
+  font-weight: 650;
+}
+
+.intelligence-kpi.good,
+.intelligence-kpi.watch,
+.intelligence-kpi.risk,
+.campaign-alert.high,
+.campaign-alert.medium {
+  border-color: #ececf1;
+}
+
+.management-project.active {
+  background: #f1f1f3;
+  border-color: #d9d9e3;
+}
+
+.management-project span {
+  color: #08765f;
+  font-weight: 650;
+}
+
+.project-meta-strip span,
+.project-connector-card em {
+  background: #ececf1;
+  color: #565869;
+}
+
+.insight-card {
+  background: #202123;
+  border-radius: 8px;
+}
+
+.insight-card h2 {
+  color: #ffffff;
+  font-weight: 650;
+}
+
+.insight-card p {
+  color: #d9d9e3;
+}
+
+.composer-area {
+  background: #ffffff;
+  max-width: 820px;
+  padding-bottom: 18px;
+}
+
+.suggestion-row button {
+  border-color: #ececf1;
+  color: #565869;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.composer {
+  border-color: #d9d9e3;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(32, 33, 35, 0.08);
+  padding: 8px;
+}
+
+.composer textarea {
+  color: #202123;
+  font-size: 0.94rem;
+  min-height: 48px;
+}
+
+.composer button {
+  border-radius: 8px;
+  height: 38px;
+  width: 38px;
+}
+
+@media (max-width: 920px) {
+  .intelligence-shell,
+  .projects-shell,
+  .users-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .chatgpt-sidebar {
+    display: none;
+  }
+
+  .users-sidebar {
+    min-height: auto;
+  }
+
+  .chatgpt-header,
+  .tool-strip,
+  .composer-area {
+    background: #ffffff;
+  }
+}
+
+@media (max-width: 620px) {
+  body {
+    font-size: 13px;
+  }
+
+  h1,
+  .users-header h1,
+  .assistant-intro h1 {
+    font-size: 1.55rem;
+  }
+
+  .login-shell,
+  .intelligence-main,
+  .users-main,
+  .projects-main {
+    padding: 14px;
+  }
+
+  .users-sidebar {
+    padding: 10px;
+  }
+
+  .intelligence-shell,
+  .projects-shell,
+  .users-shell {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .intelligence-layout,
+  .platform-split-grid,
+  .project-management-grid,
+  .project-connector-grid,
+  .user-summary-grid,
+  .project-summary-grid,
+  .intelligence-kpi-grid,
+  .platform-split-grid dl {
+    grid-template-columns: 1fr;
+  }
+
+  .platform-panel,
+  .insight-panel,
+  .campaign-table-panel,
+  .project-directory,
+  .connector-management-panel,
+  .users-table-panel {
+    padding: 14px;
+  }
+
+  .conversation {
+    padding: 24px 16px 12px;
+  }
+
+  .message-card {
+    font-size: 0.9rem;
+  }
+}
