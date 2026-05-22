@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { LoginScreen } from './components/LoginScreen';
+import { ProjectConnectorModule } from './components/ProjectConnectorModule';
 import { RevenueChat } from './components/RevenueChat';
 import { UserModule } from './components/UserModule';
 import { DEMO_EMAIL, DEMO_PASSWORD, DEMO_TOKEN, fallbackCurrentUser, fallbackUsers } from './data/demoAuth';
-import { api, User } from './lib/api';
+import { fallbackProjects } from './data/demoProjects';
+import { api, Project, User } from './lib/api';
 
 const SESSION_STORAGE_KEY = 'ppc-dashboard-demo-session';
 
@@ -26,9 +28,12 @@ function App() {
     }
   });
   const [users, setUsers] = useState<User[]>(fallbackUsers);
-  const [activeModule, setActiveModule] = useState<'chat' | 'users'>('chat');
+  const [projects, setProjects] = useState<Project[]>(fallbackProjects);
+  const [selectedProjectId, setSelectedProjectId] = useState(fallbackProjects[0].id);
+  const [activeModule, setActiveModule] = useState<'chat' | 'projects' | 'users'>('chat');
   const [loginError, setLoginError] = useState<string>();
   const sessionToken = session?.token;
+  const selectedProject = projects.find((project) => project.id === selectedProjectId) || projects[0];
 
   useEffect(() => {
     const activeToken = sessionToken;
@@ -39,9 +44,10 @@ function App() {
 
     async function loadUsers(token: string) {
       try {
-        const [currentUserResponse, usersResponse] = await Promise.all([
+        const [currentUserResponse, usersResponse, projectsResponse] = await Promise.all([
           api.getCurrentUser(token),
           api.getUsers(token),
+          api.getProjects(),
         ]);
 
         if (ignore) return;
@@ -49,10 +55,13 @@ function App() {
         const freshSession = { token, user: currentUserResponse.user };
         setSession(freshSession);
         setUsers(usersResponse.users);
+        setProjects(projectsResponse.projects);
+        setSelectedProjectId((current) => projectsResponse.projects.find((project) => project.id === current)?.id || projectsResponse.projects[0]?.id || fallbackProjects[0].id);
         window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(freshSession));
       } catch {
         if (ignore) return;
         setUsers(fallbackUsers);
+        setProjects(fallbackProjects);
       }
     }
 
@@ -80,6 +89,7 @@ function App() {
 
         setSession(fallbackSession);
         setUsers(fallbackUsers);
+        setProjects(fallbackProjects);
         setActiveModule('chat');
         window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(fallbackSession));
         return;
@@ -110,8 +120,26 @@ function App() {
     );
   }
 
+  if (activeModule === 'projects') {
+    return (
+      <ProjectConnectorModule
+        currentUser={session.user}
+        onBack={() => setActiveModule('chat')}
+        onLogout={handleLogout}
+        onSelectProject={setSelectedProjectId}
+        projects={projects}
+        selectedProject={selectedProject}
+      />
+    );
+  }
+
   return (
-    <RevenueChat currentUser={session.user} onLogout={handleLogout} onOpenUsers={() => setActiveModule('users')} />
+    <RevenueChat
+      currentUser={session.user}
+      onLogout={handleLogout}
+      onOpenProjects={() => setActiveModule('projects')}
+      onOpenUsers={() => setActiveModule('users')}
+    />
   );
 }
 

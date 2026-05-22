@@ -54,6 +54,26 @@ test('opens the user module and returns to chat', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'How can I help with your campaigns?' })).toBeVisible();
 });
 
+test('opens project and connector management module', async ({ page }) => {
+  await login(page);
+
+  await page.getByRole('button', { name: 'Projects & connectors' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Project & Connector Management' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Crystal Hues PPC/ })).toBeVisible();
+  await expect(page.getByLabel('Connector management').getByText('Google + Meta connected')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Crystal Hues PPC connectors' })).toBeVisible();
+  await expect(page.getByRole('article').filter({ hasText: 'Google Ads' }).getByText('Read + draft actions')).toBeVisible();
+  await expect(page.getByRole('article').filter({ hasText: 'Google Ads' }).getByText('read write with approval')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Lead Gen Test Needs connectors' }).click();
+  await expect(page.getByRole('heading', { name: 'Lead Gen Test connectors' })).toBeVisible();
+  await expect(page.getByText('No connectors configured')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Back to AI chat' }).click();
+  await expect(page.getByRole('heading', { name: 'How can I help with your campaigns?' })).toBeVisible();
+});
+
 test('logs out of the demo SaaS session', async ({ page }) => {
   await login(page);
 

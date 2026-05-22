@@ -43,6 +43,9 @@ const projects = [
     id: 'project_crystal_hues',
     name: 'Crystal Hues PPC',
     status: 'Google + Meta connected',
+    health: 'Ready for AI actions',
+    monthlySpend: '₹12.4L',
+    owner: 'Shailesh Kumar',
     connectors: [
       {
         id: 'google_ads',
@@ -78,6 +81,9 @@ const projects = [
     id: 'project_demo_ecommerce',
     name: 'Demo Ecommerce',
     status: 'Meta connected',
+    health: 'Needs Google Ads connection',
+    monthlySpend: '₹4.8L',
+    owner: 'Aarav Mehta',
     connectors: [
       {
         id: 'meta_ads',
@@ -92,6 +98,9 @@ const projects = [
     id: 'project_lead_gen_test',
     name: 'Lead Gen Test',
     status: 'Needs connectors',
+    health: 'Setup incomplete',
+    monthlySpend: 'Not synced',
+    owner: 'Nisha Rao',
     connectors: [],
   },
 ];

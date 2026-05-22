@@ -16,19 +16,15 @@ import {
   Users,
 } from 'lucide-react';
 import { chatPrompts } from '../data/strategy';
+import { fallbackProjects } from '../data/demoProjects';
 import { api, Approval, Chat, ChatMessage, ChatMode, Connector, Project, User } from '../lib/api';
 
 type RevenueChatProps = {
   currentUser: User;
   onLogout: () => void;
+  onOpenProjects: () => void;
   onOpenUsers: () => void;
 };
-
-const fallbackProjects: Project[] = [
-  { id: 'project_crystal_hues', name: 'Crystal Hues PPC', status: 'Google + Meta connected' },
-  { id: 'project_demo_ecommerce', name: 'Demo Ecommerce', status: 'Meta connected' },
-  { id: 'project_lead_gen_test', name: 'Lead Gen Test', status: 'Needs connectors' },
-];
 
 const fallbackChats: Chat[] = [
   { id: 'chat_cpa_increase', projectId: 'project_crystal_hues', title: 'Why did CPA increase this week?' },
@@ -62,7 +58,7 @@ const fallbackConnectors: Connector[] = [
   },
 ];
 
-export function RevenueChat({ currentUser, onLogout, onOpenUsers }: RevenueChatProps) {
+export function RevenueChat({ currentUser, onLogout, onOpenProjects, onOpenUsers }: RevenueChatProps) {
   const [mode, setMode] = useState<ChatMode>('Ask');
   const [draft, setDraft] = useState(chatPrompts[0].prompt);
   const [showSetup, setShowSetup] = useState(false);
@@ -207,6 +203,11 @@ export function RevenueChat({ currentUser, onLogout, onOpenUsers }: RevenueChatP
         <button className="sidebar-nav-button" onClick={onOpenUsers} type="button">
           <Users size={17} />
           Users
+        </button>
+
+        <button className="sidebar-nav-button" onClick={onOpenProjects} type="button">
+          <Settings size={17} />
+          Projects & connectors
         </button>
 
         <section className="sidebar-section">

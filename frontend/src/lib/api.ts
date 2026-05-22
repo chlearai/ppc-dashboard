@@ -4,6 +4,10 @@ export type Project = {
   id: string;
   name: string;
   status: string;
+  health?: string;
+  monthlySpend?: string;
+  owner?: string;
+  connectors?: Connector[];
 };
 
 export type Connector = {
