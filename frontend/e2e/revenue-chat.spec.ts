@@ -74,6 +74,29 @@ test('opens project and connector management module', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'How can I help with your campaigns?' })).toBeVisible();
 });
 
+test('opens campaign intelligence dashboard with project scoped metrics', async ({ page }) => {
+  await login(page);
+
+  await page.getByRole('button', { name: 'Campaign intelligence' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Campaign Intelligence Dashboard' })).toBeVisible();
+  await expect(page.getByText('Crystal Hues PPC')).toBeVisible();
+  await expect(page.getByText('₹12.4L')).toBeVisible();
+  await expect(page.getByText('3.36x', { exact: true })).toBeVisible();
+  await expect(page.getByText('₹1,420')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Platform split' })).toBeVisible();
+  await expect(page.getByRole('article').filter({ hasText: 'Brand search is carrying efficiency' }).getByText('Google Ads')).toBeVisible();
+  await expect(page.getByRole('article').filter({ hasText: 'Prospecting fatigue is raising acquisition cost' }).getByText('Meta Ads')).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: 'Campaign' })).toBeVisible();
+  await expect(page.getByText('Brand Search - India')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Why performance changed' })).toBeVisible();
+  await expect(page.getByText('ROAS dropped because Meta prospecting fatigue increased')).toBeVisible();
+  await expect(page.getByText('High CPL alert')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Back to AI chat' }).click();
+  await expect(page.getByRole('heading', { name: 'How can I help with your campaigns?' })).toBeVisible();
+});
+
 test('logs out of the demo SaaS session', async ({ page }) => {
   await login(page);
 

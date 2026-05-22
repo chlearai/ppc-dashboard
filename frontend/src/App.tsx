@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
+import { CampaignIntelligenceModule } from './components/CampaignIntelligenceModule';
 import { LoginScreen } from './components/LoginScreen';
 import { ProjectConnectorModule } from './components/ProjectConnectorModule';
 import { RevenueChat } from './components/RevenueChat';
 import { UserModule } from './components/UserModule';
 import { DEMO_EMAIL, DEMO_PASSWORD, DEMO_TOKEN, fallbackCurrentUser, fallbackUsers } from './data/demoAuth';
+import { getFallbackIntelligence } from './data/demoIntelligence';
 import { fallbackProjects } from './data/demoProjects';
-import { api, Project, User } from './lib/api';
+import { api, CampaignIntelligence, Project, User } from './lib/api';
 
 const SESSION_STORAGE_KEY = 'ppc-dashboard-demo-session';
 
@@ -30,7 +32,8 @@ function App() {
   const [users, setUsers] = useState<User[]>(fallbackUsers);
   const [projects, setProjects] = useState<Project[]>(fallbackProjects);
   const [selectedProjectId, setSelectedProjectId] = useState(fallbackProjects[0].id);
-  const [activeModule, setActiveModule] = useState<'chat' | 'projects' | 'users'>('chat');
+  const [intelligence, setIntelligence] = useState<CampaignIntelligence>(getFallbackIntelligence(fallbackProjects[0].id));
+  const [activeModule, setActiveModule] = useState<'chat' | 'intelligence' | 'projects' | 'users'>('chat');
   const [loginError, setLoginError] = useState<string>();
   const sessionToken = session?.token;
   const selectedProject = projects.find((project) => project.id === selectedProjectId) || projects[0];
@@ -44,10 +47,11 @@ function App() {
 
     async function loadUsers(token: string) {
       try {
-        const [currentUserResponse, usersResponse, projectsResponse] = await Promise.all([
+        const [currentUserResponse, usersResponse, projectsResponse, intelligenceResponse] = await Promise.all([
           api.getCurrentUser(token),
           api.getUsers(token),
           api.getProjects(),
+          api.getCampaignIntelligence(selectedProjectId),
         ]);
 
         if (ignore) return;
@@ -56,12 +60,19 @@ function App() {
         setSession(freshSession);
         setUsers(usersResponse.users);
         setProjects(projectsResponse.projects);
-        setSelectedProjectId((current) => projectsResponse.projects.find((project) => project.id === current)?.id || projectsResponse.projects[0]?.id || fallbackProjects[0].id);
+        setIntelligence(intelligenceResponse.intelligence);
+        setSelectedProjectId(
+          (current) =>
+            projectsResponse.projects.find((project) => project.id === current)?.id ||
+            projectsResponse.projects[0]?.id ||
+            fallbackProjects[0].id,
+        );
         window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(freshSession));
       } catch {
         if (ignore) return;
         setUsers(fallbackUsers);
         setProjects(fallbackProjects);
+        setIntelligence(getFallbackIntelligence(selectedProjectId));
       }
     }
 
@@ -70,7 +81,7 @@ function App() {
     return () => {
       ignore = true;
     };
-  }, [sessionToken]);
+  }, [selectedProjectId, sessionToken]);
 
   async function handleLogin(email: string, password: string) {
     setLoginError(undefined);
@@ -90,6 +101,7 @@ function App() {
         setSession(fallbackSession);
         setUsers(fallbackUsers);
         setProjects(fallbackProjects);
+        setIntelligence(getFallbackIntelligence(fallbackProjects[0].id));
         setActiveModule('chat');
         window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(fallbackSession));
         return;
@@ -120,6 +132,17 @@ function App() {
     );
   }
 
+  if (activeModule === 'intelligence') {
+    return (
+      <CampaignIntelligenceModule
+        currentUser={session.user}
+        intelligence={intelligence}
+        onBack={() => setActiveModule('chat')}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
   if (activeModule === 'projects') {
     return (
       <ProjectConnectorModule
@@ -137,6 +160,7 @@ function App() {
     <RevenueChat
       currentUser={session.user}
       onLogout={handleLogout}
+      onOpenIntelligence={() => setActiveModule('intelligence')}
       onOpenProjects={() => setActiveModule('projects')}
       onOpenUsers={() => setActiveModule('users')}
     />

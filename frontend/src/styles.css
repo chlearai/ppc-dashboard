@@ -1325,6 +1325,7 @@ td:first-child {
   font-size: 0.9rem;
 }
 
+.intelligence-shell,
 .users-shell,
 .projects-shell {
   background: #f4f6f8;
@@ -1358,6 +1359,7 @@ td:first-child {
   width: 100%;
 }
 
+.intelligence-main,
 .users-main,
 .projects-main {
   display: grid;
@@ -1562,6 +1564,204 @@ td:first-child {
 .empty-connectors p {
   line-height: 1.5;
   max-width: 420px;
+}
+
+.intelligence-kpi-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.intelligence-kpi {
+  background: #fbfcfd;
+  border: 1px solid #dce3eb;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  min-height: 132px;
+  padding: 16px;
+}
+
+.intelligence-kpi span {
+  color: #687386;
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.intelligence-kpi strong {
+  color: #111827;
+  font-size: 1.65rem;
+}
+
+.intelligence-kpi small {
+  color: #536275;
+  font-weight: 750;
+}
+
+.intelligence-kpi.good {
+  border-color: #b8ded6;
+}
+
+.intelligence-kpi.watch {
+  border-color: #ecd28d;
+}
+
+.intelligence-kpi.risk {
+  border-color: #efb1ad;
+}
+
+.intelligence-layout {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+}
+
+.platform-panel,
+.insight-panel,
+.campaign-table-panel {
+  background: #fbfcfd;
+  border: 1px solid #dce3eb;
+  border-radius: 8px;
+  box-shadow: 0 18px 42px rgba(26, 37, 56, 0.06);
+  min-width: 0;
+  padding: 18px;
+}
+
+.platform-split-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.platform-split-grid article {
+  background: #f6f8fa;
+  border: 1px solid #dce3eb;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.platform-split-grid article > div,
+.insight-card {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.platform-split-grid svg,
+.insight-card svg,
+.campaign-alert svg {
+  color: #0b746d;
+}
+
+.platform-split-grid dl {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+}
+
+.platform-split-grid dt {
+  color: #687386;
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.platform-split-grid dd {
+  color: #111827;
+  font-weight: 850;
+  margin: 3px 0 0;
+}
+
+.platform-split-grid p {
+  color: #536275;
+  line-height: 1.45;
+  margin-bottom: 0;
+}
+
+.insight-panel {
+  align-self: start;
+  display: grid;
+  gap: 12px;
+}
+
+.insight-card {
+  align-items: flex-start;
+  background: #172033;
+  border-radius: 8px;
+  color: #f8fafc;
+  display: grid;
+  padding: 16px;
+}
+
+.insight-card h2 {
+  color: #f8fafc;
+}
+
+.insight-card p {
+  color: #cbd5e1;
+  line-height: 1.55;
+  margin-bottom: 0;
+}
+
+.alert-list {
+  display: grid;
+  gap: 10px;
+}
+
+.campaign-alert {
+  align-items: flex-start;
+  background: #f6f8fa;
+  border: 1px solid #dce3eb;
+  border-radius: 8px;
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+}
+
+.campaign-alert.high {
+  border-color: #efb1ad;
+}
+
+.campaign-alert.medium {
+  border-color: #ecd28d;
+}
+
+.campaign-alert strong {
+  color: #172033;
+}
+
+.campaign-alert p {
+  color: #536275;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  margin: 3px 0 0;
+}
+
+.campaign-status {
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-style: normal;
+  font-weight: 850;
+  padding: 5px 8px;
+}
+
+.campaign-status.efficient {
+  background: #edf7f4;
+  color: #07665f;
+}
+
+.campaign-status.watch {
+  background: #fff4dc;
+  color: #9a5b00;
+}
+
+.campaign-status.risk {
+  background: #fff1f1;
+  color: #a42016;
 }
 
 .users-table-panel {
@@ -2213,6 +2413,7 @@ td:first-child {
 }
 
 @media (max-width: 920px) {
+  .intelligence-shell,
   .users-shell,
   .projects-shell {
     grid-template-columns: 1fr;
@@ -2226,11 +2427,17 @@ td:first-child {
     margin-top: 0;
   }
 
+  .intelligence-layout,
+  .platform-split-grid,
   .user-summary-grid,
   .project-summary-grid,
   .project-management-grid,
   .project-connector-grid {
     grid-template-columns: 1fr;
+  }
+
+  .intelligence-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .chatgpt-shell {
@@ -2284,9 +2491,56 @@ td:first-child {
 
 @media (max-width: 620px) {
   .login-shell,
+  .intelligence-main,
   .users-main,
   .projects-main {
     padding: 16px;
+  }
+
+  .intelligence-kpi-grid,
+  .platform-split-grid dl {
+    grid-template-columns: 1fr;
+  }
+
+  .campaign-table-panel .users-table {
+    min-width: 0;
+  }
+
+  .campaign-table-panel .users-table thead {
+    display: none;
+  }
+
+  .campaign-table-panel .users-table,
+  .campaign-table-panel .users-table tbody,
+  .campaign-table-panel .users-table tr,
+  .campaign-table-panel .users-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .campaign-table-panel .users-table tr {
+    background: #f6f8fa;
+    border: 1px solid #dce3eb;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 10px;
+  }
+
+  .campaign-table-panel .users-table td {
+    align-items: start;
+    border-bottom: 0;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: 88px minmax(0, 1fr);
+    padding: 7px 4px;
+  }
+
+  .campaign-table-panel .users-table td::before {
+    color: #687386;
+    content: attr(data-label);
+    font-size: 0.72rem;
+    font-weight: 850;
+    text-transform: uppercase;
   }
 
   .login-panel {

@@ -62,6 +62,54 @@ export type LoginResponse = {
   user: User;
 };
 
+export type IntelligenceMetric = {
+  label: string;
+  value: string;
+  delta: string;
+  status: 'good' | 'watch' | 'risk';
+};
+
+export type PlatformMetric = {
+  platform: string;
+  spend: string;
+  roas: string;
+  cpl: string;
+  signal: string;
+};
+
+export type CampaignRow = {
+  id: string;
+  name: string;
+  platform: string;
+  status: string;
+  spend: string;
+  cpa: string;
+  roas: string;
+  issue: string;
+};
+
+export type CampaignInsight = {
+  title: string;
+  detail: string;
+};
+
+export type CampaignAlert = {
+  label: string;
+  severity: 'high' | 'medium' | 'low';
+  detail: string;
+};
+
+export type CampaignIntelligence = {
+  projectId: string;
+  projectName: string;
+  summary: string;
+  metrics: IntelligenceMetric[];
+  platforms: PlatformMetric[];
+  campaigns: CampaignRow[];
+  insight: CampaignInsight;
+  alerts: CampaignAlert[];
+};
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8787';
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -99,6 +147,8 @@ export const api = {
       },
     }),
   getProjects: () => request<{ projects: Project[] }>('/api/projects'),
+  getCampaignIntelligence: (projectId: string) =>
+    request<{ intelligence: CampaignIntelligence }>(`/api/campaign-intelligence?projectId=${projectId}`),
   getChats: (projectId: string) => request<{ chats: Chat[] }>(`/api/chats?projectId=${projectId}`),
   getConnectors: (projectId: string) => request<{ connectors: Connector[] }>(`/api/connectors?projectId=${projectId}`),
   getMessages: () => request<{ messages: ChatMessage[] }>('/api/messages'),

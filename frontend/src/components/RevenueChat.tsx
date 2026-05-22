@@ -22,6 +22,7 @@ import { api, Approval, Chat, ChatMessage, ChatMode, Connector, Project, User } 
 type RevenueChatProps = {
   currentUser: User;
   onLogout: () => void;
+  onOpenIntelligence: () => void;
   onOpenProjects: () => void;
   onOpenUsers: () => void;
 };
@@ -58,7 +59,7 @@ const fallbackConnectors: Connector[] = [
   },
 ];
 
-export function RevenueChat({ currentUser, onLogout, onOpenProjects, onOpenUsers }: RevenueChatProps) {
+export function RevenueChat({ currentUser, onLogout, onOpenIntelligence, onOpenProjects, onOpenUsers }: RevenueChatProps) {
   const [mode, setMode] = useState<ChatMode>('Ask');
   const [draft, setDraft] = useState(chatPrompts[0].prompt);
   const [showSetup, setShowSetup] = useState(false);
@@ -203,6 +204,11 @@ export function RevenueChat({ currentUser, onLogout, onOpenProjects, onOpenUsers
         <button className="sidebar-nav-button" onClick={onOpenUsers} type="button">
           <Users size={17} />
           Users
+        </button>
+
+        <button className="sidebar-nav-button" onClick={onOpenIntelligence} type="button">
+          <DatabaseZap size={17} />
+          Campaign intelligence
         </button>
 
         <button className="sidebar-nav-button" onClick={onOpenProjects} type="button">
