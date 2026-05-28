@@ -1,4 +1,5 @@
-import { ArrowLeft, BarChart3, Bell, LineChart, Target, TrendingDown } from 'lucide-react';
+import { ArrowLeft, BarChart3, Bell, Target, TrendingDown } from 'lucide-react';
+import { recommendations, sourceHealth } from '../data/strategy';
 import { CampaignIntelligence, User } from '../lib/api';
 
 type CampaignIntelligenceModuleProps = {
@@ -44,16 +45,24 @@ export function CampaignIntelligenceModule({
       </aside>
 
       <section className="intelligence-main">
-        <header className="users-header">
-          <div>
+        <section className="dashboard-hero intelligence-hero">
+          <div className="dashboard-hero-copy">
             <p>{intelligence.projectName}</p>
             <h1>Campaign Intelligence Dashboard</h1>
+            <span>{intelligence.summary}</span>
+            <div className="hero-chip-row">
+              <span>Last 7 days</span>
+              <span>{intelligence.metrics[0]?.value || '87%'} confidence</span>
+              <span>{intelligence.platforms.length} active platforms</span>
+            </div>
           </div>
-          <span className="sync-pill">
-            <LineChart size={15} />
-            Last 7 days
-          </span>
-        </header>
+
+          <div className="dashboard-score-card">
+            <p>Intelligence score</p>
+            <strong>{intelligence.metrics[0]?.value || '87%'}</strong>
+            <span>{intelligence.summary}</span>
+          </div>
+        </section>
 
         <div className="intelligence-kpi-grid">
           {intelligence.metrics.map((metric) => (
@@ -72,6 +81,7 @@ export function CampaignIntelligenceModule({
                 <p>Spend mix</p>
                 <h2>Platform split</h2>
               </div>
+              <span>{intelligence.platforms.length} sources</span>
             </div>
 
             <div className="platform-split-grid">
@@ -119,7 +129,56 @@ export function CampaignIntelligenceModule({
                 </article>
               ))}
             </div>
+
+            <div className="source-list">
+              {sourceHealth.map((source) => {
+                const Icon = source.icon;
+
+                return (
+                  <article key={source.label}>
+                    <Icon size={18} />
+                    <div>
+                      <strong>{source.label}</strong>
+                      <span>{source.status}</span>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
           </aside>
+        </section>
+
+        <section className="recommendation-band">
+          <div className="users-table-head">
+            <div>
+              <p>Next moves</p>
+              <h2>Recommended actions</h2>
+            </div>
+            <span>{recommendations.length} actions</span>
+          </div>
+
+          <div className="recommendation-list">
+            {recommendations.map((item) => (
+              <article className="recommendation-row" key={item.id}>
+                <div className={`platform-dot ${item.platform === 'Google Ads' ? 'google' : 'meta'}`} />
+                <div>
+                  <div className="row-title">
+                    <strong>{item.title}</strong>
+                    <span>{item.risk} risk</span>
+                  </div>
+                  <p>{item.reason}</p>
+                  <div className="action-line">
+                    <strong>Action</strong>
+                    <span>{item.action}</span>
+                  </div>
+                  <div className="pill-row">
+                    <span className={`confidence-${item.confidence.toLowerCase()}`}>{item.confidence} confidence</span>
+                    <span>{item.impact}</span>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
         </section>
 
         <section className="campaign-table-panel" aria-label="Campaign table">

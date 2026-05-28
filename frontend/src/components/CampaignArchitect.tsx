@@ -70,14 +70,36 @@ function CampaignArchitectContent({ projectId, projectName }: { projectId: strin
 
   return (
     <section className="architect-grid">
+      <section className="dashboard-hero architect-hero">
+        <div className="dashboard-hero-copy">
+          <p>Campaign Architect</p>
+          <h1>{projectName}</h1>
+          <span>
+            Strategy an expert can trust. Execution a junior operator can follow. Built as a planning workspace with
+            versioned campaign books, approval traceability, and clear forecast confidence.
+          </span>
+          <div className="hero-chip-row">
+            <span>{campaignBooks.length} saved versions</span>
+            <span>{auditLogs.length} audit events</span>
+            <span>{intakeQuestions.length} intake prompts</span>
+          </div>
+        </div>
+
+        <div className="dashboard-score-card">
+          <p>Plan readiness</p>
+          <strong>87%</strong>
+          <span>Strong enough for launch review after the remaining data gaps are resolved.</span>
+        </div>
+      </section>
+
       <div className="planner-main">
         <div className="module-hero">
           <div>
-            <p>{projectName}</p>
-            <h2>Strategy an expert can trust. Execution a junior operator can follow.</h2>
+            <p>Planning surface</p>
+            <h2>Turn account signals into a build-ready campaign book.</h2>
             <span>
-              The AI builds a data-backed Google and Meta media plan, explains the logic, labels confidence, and turns
-              the plan into native-platform build steps.
+              Use the intake, forecast, and architecture tables to turn connected data into a clear plan for Google
+              Ads and Meta Ads.
             </span>
             <div className="hero-actions">
               <button type="button">Start guided intake</button>
@@ -93,6 +115,29 @@ function CampaignArchitectContent({ projectId, projectName }: { projectId: strin
             <span>Strong enough for launch review after 3 data gaps are resolved.</span>
           </div>
         </div>
+
+        <section className="planning-metrics">
+          <article>
+            <p>Version history</p>
+            <strong>{campaignBooks.length}</strong>
+            <span>Saved campaign books</span>
+          </article>
+          <article>
+            <p>Approval trail</p>
+            <strong>{auditLogs.length}</strong>
+            <span>Logged AI and human decisions</span>
+          </article>
+          <article>
+            <p>Confidence gate</p>
+            <strong>High</strong>
+            <span>Forecast backed by connected data</span>
+          </article>
+          <article>
+            <p>Export status</p>
+            <strong>Ready</strong>
+            <span>Print-ready campaign book layout</span>
+          </article>
+        </section>
 
         <section className="record-traceability">
           <div className="record-card">

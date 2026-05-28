@@ -87,7 +87,8 @@ test('opens campaign architect for planning and campaign book export', async ({ 
 
   await page.getByRole('button', { name: 'Campaign Architect' }).click();
 
-  await expect(page.getByRole('heading', { name: 'Strategy an expert can trust. Execution a junior operator can follow.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Turn account signals into a build-ready campaign book.' })).toBeVisible();
+  await expect(page.getByText('Campaign Architect', { exact: true })).toBeVisible();
   await expect(page.getByText('Questions before planning')).toBeVisible();
   await expect(page.getByText('Build-ready structure with expert logic')).toBeVisible();
   await expect(page.getByText('Campaign book sections')).toBeVisible();
@@ -124,7 +125,7 @@ test('opens campaign intelligence dashboard with project scoped metrics', async 
 
   await expect(page.getByRole('heading', { name: 'Campaign Intelligence Dashboard' })).toBeVisible();
   await expect(page.getByText('Crystal Hues PPC')).toBeVisible();
-  await expect(page.getByText('₹12.4L')).toBeVisible();
+  await expect(page.getByRole('article').filter({ hasText: 'Spend' }).getByText('₹12.4L', { exact: true })).toBeVisible();
   await expect(page.getByText('3.36x', { exact: true })).toBeVisible();
   await expect(page.getByText('₹1,420')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Platform split' })).toBeVisible();
@@ -133,7 +134,12 @@ test('opens campaign intelligence dashboard with project scoped metrics', async 
   await expect(page.getByRole('columnheader', { name: 'Campaign' })).toBeVisible();
   await expect(page.getByText('Brand Search - India')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Why performance changed' })).toBeVisible();
-  await expect(page.getByText('ROAS dropped because Meta prospecting fatigue increased')).toBeVisible();
+  await expect(
+    page.getByText(
+      'ROAS dropped because Meta prospecting fatigue increased and competitor search absorbed more spend without matching conversion quality.',
+      { exact: true },
+    ),
+  ).toBeVisible();
   await expect(page.getByText('High CPL alert')).toBeVisible();
 
   await page.getByRole('button', { name: 'Back to AI chat' }).click();
