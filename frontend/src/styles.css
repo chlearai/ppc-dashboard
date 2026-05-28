@@ -1540,6 +1540,52 @@ td:first-child {
   justify-content: center;
 }
 
+.brain-provider-picker {
+  display: grid;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.brain-provider-current {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.brain-provider-current strong {
+  color: #172033;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.brain-provider-current span {
+  background: #f0f4f8;
+  color: #334155;
+}
+
+.brain-provider-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.brain-provider-button {
+  background: #ffffff;
+  border: 1px solid #d6dee8;
+  border-radius: 999px;
+  color: #334155;
+  font-size: 0.76rem;
+  font-weight: 850;
+  padding: 6px 10px;
+}
+
+.brain-provider-button.active {
+  background: #0b746d;
+  border-color: #0b746d;
+  color: #ffffff;
+}
+
 .empty-connectors {
   align-items: center;
   background: #f6f8fa;

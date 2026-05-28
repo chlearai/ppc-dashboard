@@ -69,13 +69,17 @@ test('opens project and connector management module', async ({ page }) => {
   await expect(page.getByRole('article').filter({ hasText: 'Meta Ads MCP' }).getByText('configured per project')).toBeVisible();
   await expect(page.getByRole('article').filter({ hasText: 'AI Agent Brain' }).getByText('Demo fallback active')).toBeVisible();
   await expect(page.getByRole('article').filter({ hasText: 'AI Agent Brain' }).getByText('Codex, Claude, or another AI agent orchestrates MCP data, Ask mode, Act mode, and approval-safe execution')).toBeVisible();
+  await page.getByRole('button', { name: 'Claude' }).click();
+  await expect(page.getByRole('article').filter({ hasText: 'AI Agent Brain' }).getByText('Configured with Claude')).toBeVisible();
 
   await page.getByRole('button', { name: 'Lead Gen Test Needs connectors' }).click();
   await expect(page.getByRole('heading', { name: 'Lead Gen Test connectors' })).toBeVisible();
   await expect(page.getByText('No connectors configured')).toBeVisible();
 
+  await page.getByRole('button', { name: 'Crystal Hues PPC Google + Meta connected Ready for AI actions' }).click();
   await page.getByRole('button', { name: 'Back to AI chat' }).click();
   await expect(page.getByRole('heading', { name: 'How can I help with your campaigns?' })).toBeVisible();
+  await expect(page.getByLabel('Connected project tools').getByText('Claude')).toBeVisible();
 });
 
 test('opens campaign architect for planning and campaign book export', async ({ page }) => {

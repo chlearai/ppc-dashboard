@@ -1,4 +1,27 @@
-import { Project } from '../lib/api';
+import { AiAgentBrainConfig, Project } from '../lib/api';
+
+const aiAgentBrainProviderOptions = ['Codex', 'Claude', 'OpenAI', 'Gemini', 'Custom agent endpoint'];
+const aiAgentBrainResponsibilities = [
+  'MCP and connector data orchestration',
+  'Ask mode campaign diagnosis',
+  'Act mode action drafting',
+  'Campaign Architect planning',
+  'Campaign Intelligence explanations',
+  'Approval queue reasoning and risk summaries',
+];
+
+export function getFallbackAiAgentBrain(projectId: string): AiAgentBrainConfig {
+  return {
+    projectId,
+    id: 'ai_agent_brain',
+    label: 'AI Agent Brain',
+    status: 'Demo fallback active',
+    providerMode: 'provider_config_required',
+    selectedProvider: null,
+    providerOptions: aiAgentBrainProviderOptions,
+    responsibilities: aiAgentBrainResponsibilities,
+  };
+}
 
 export const fallbackProjects: Project[] = [
   {

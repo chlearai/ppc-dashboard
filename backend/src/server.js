@@ -195,21 +195,52 @@ const approvals = [
   },
 ];
 
-const aiAgentBrain = {
-  id: 'ai_agent_brain',
-  label: 'AI Agent Brain',
-  status: 'Demo fallback active',
-  providerMode: 'provider_config_required',
-  providerOptions: ['Codex', 'Claude', 'OpenAI', 'Gemini', 'Custom agent endpoint'],
-  responsibilities: [
-    'MCP and connector data orchestration',
-    'Ask mode campaign diagnosis',
-    'Act mode action drafting',
-    'Campaign Architect planning',
-    'Campaign Intelligence explanations',
-    'Approval queue reasoning and risk summaries',
-  ],
-};
+const aiAgentBrainProviderOptions = ['Codex', 'Claude', 'OpenAI', 'Gemini', 'Custom agent endpoint'];
+const aiAgentBrainResponsibilities = [
+  'MCP and connector data orchestration',
+  'Ask mode campaign diagnosis',
+  'Act mode action drafting',
+  'Campaign Architect planning',
+  'Campaign Intelligence explanations',
+  'Approval queue reasoning and risk summaries',
+];
+
+const aiAgentBrainStateByProject = Object.fromEntries(
+  projects.map((project) => [
+    project.id,
+    {
+      projectId: project.id,
+      id: 'ai_agent_brain',
+      label: 'AI Agent Brain',
+      selectedProvider: null,
+      providerMode: 'provider_config_required',
+      providerOptions: aiAgentBrainProviderOptions,
+      responsibilities: aiAgentBrainResponsibilities,
+    },
+  ]),
+);
+
+function getAiAgentBrain(projectId) {
+  const brain = aiAgentBrainStateByProject[projectId] || aiAgentBrainStateByProject[projects[0].id];
+  const status = brain.selectedProvider ? `Configured with ${brain.selectedProvider}` : 'Demo fallback active';
+
+  return {
+    ...brain,
+    status,
+  };
+}
+
+function updateAiAgentBrain(projectId, selectedProvider) {
+  const brain = aiAgentBrainStateByProject[projectId] || aiAgentBrainStateByProject[projects[0].id];
+  const provider = selectedProvider || null;
+
+  if (provider && !brain.providerOptions.includes(provider)) {
+    return null;
+  }
+
+  brain.selectedProvider = provider;
+  return getAiAgentBrain(projectId);
+}
 
 const campaignIntelligence = {
   project_crystal_hues: {
@@ -349,7 +380,23 @@ const server = http.createServer(async (request, response) => {
     request.method === 'GET' &&
     (requestUrl.pathname === '/api/ai-agent-brain' || requestUrl.pathname === '/api/llm-brain')
   ) {
-    jsonResponse(response, 200, { brain: aiAgentBrain });
+    const project = getProject(requestUrl);
+    jsonResponse(response, 200, { brain: getAiAgentBrain(project.id) });
+    return;
+  }
+
+  if (request.method === 'POST' && requestUrl.pathname === '/api/ai-agent-brain') {
+    const body = await parseBody(request);
+    const projectId = typeof body.projectId === 'string' ? body.projectId : projects[0].id;
+    const selectedProvider = typeof body.selectedProvider === 'string' ? body.selectedProvider : null;
+    const brain = updateAiAgentBrain(projectId, selectedProvider);
+
+    if (!brain) {
+      jsonResponse(response, 400, { error: 'Invalid AI Agent Brain provider' });
+      return;
+    }
+
+    jsonResponse(response, 200, { brain });
     return;
   }
 
@@ -433,10 +480,14 @@ const server = http.createServer(async (request, response) => {
   if (request.method === 'POST' && requestUrl.pathname === '/api/chat') {
     const body = await parseBody(request);
     const mode = body.mode === 'Act' ? 'Act' : 'Ask';
+    const projectId = typeof body.projectId === 'string' ? body.projectId : projects[0].id;
+    const brain = getAiAgentBrain(projectId);
+    const agentProvider = brain.selectedProvider || 'Demo fallback active';
 
     if (mode === 'Act') {
       jsonResponse(response, 200, {
         mode,
+        agentProvider,
         content: 'I can prepare these changes. I will not execute anything until you approve the final list.',
         approvalRequired: true,
         proposedActions: approvals,
@@ -446,6 +497,7 @@ const server = http.createServer(async (request, response) => {
 
     jsonResponse(response, 200, {
       mode,
+      agentProvider,
       content:
         'I checked connected Google Ads and Meta Ads data. The largest issue is wasted spend from low-intent search terms, followed by Meta prospecting creative fatigue.',
       table: messages[1].table,

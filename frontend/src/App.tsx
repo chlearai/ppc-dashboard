@@ -7,8 +7,8 @@ import { RevenueChat } from './components/RevenueChat';
 import { UserModule } from './components/UserModule';
 import { DEMO_EMAIL, DEMO_PASSWORD, DEMO_TOKEN, fallbackCurrentUser, fallbackUsers } from './data/demoAuth';
 import { getFallbackIntelligence } from './data/demoIntelligence';
-import { fallbackProjects } from './data/demoProjects';
-import { api, CampaignIntelligence, Project, User } from './lib/api';
+import { fallbackProjects, getFallbackAiAgentBrain } from './data/demoProjects';
+import { api, AiAgentBrainConfig, CampaignIntelligence, Project, User } from './lib/api';
 
 const SESSION_STORAGE_KEY = 'ppc-dashboard-demo-session';
 
@@ -34,10 +34,17 @@ function App() {
   const [projects, setProjects] = useState<Project[]>(fallbackProjects);
   const [selectedProjectId, setSelectedProjectId] = useState(fallbackProjects[0].id);
   const [intelligence, setIntelligence] = useState<CampaignIntelligence>(getFallbackIntelligence(fallbackProjects[0].id));
+  const [aiAgentBrains, setAiAgentBrains] = useState<Record<string, AiAgentBrainConfig>>(
+    () =>
+      Object.fromEntries(
+        fallbackProjects.map((project) => [project.id, getFallbackAiAgentBrain(project.id)]),
+      ) as Record<string, AiAgentBrainConfig>,
+  );
   const [activeModule, setActiveModule] = useState<'chat' | 'architect' | 'intelligence' | 'projects' | 'users'>('chat');
   const [loginError, setLoginError] = useState<string>();
   const sessionToken = session?.token;
   const selectedProject = projects.find((project) => project.id === selectedProjectId) || projects[0];
+  const aiAgentBrain = aiAgentBrains[selectedProjectId] || getFallbackAiAgentBrain(selectedProjectId);
 
   useEffect(() => {
     const activeToken = sessionToken;
@@ -48,11 +55,12 @@ function App() {
 
     async function loadUsers(token: string) {
       try {
-        const [currentUserResponse, usersResponse, projectsResponse, intelligenceResponse] = await Promise.all([
+        const [currentUserResponse, usersResponse, projectsResponse, intelligenceResponse, brainResponse] = await Promise.all([
           api.getCurrentUser(token),
           api.getUsers(token),
           api.getProjects(),
           api.getCampaignIntelligence(selectedProjectId),
+          api.getAiAgentBrain(selectedProjectId),
         ]);
 
         if (ignore) return;
@@ -62,6 +70,10 @@ function App() {
         setUsers(usersResponse.users);
         setProjects(projectsResponse.projects);
         setIntelligence(intelligenceResponse.intelligence);
+        setAiAgentBrains((current) => ({
+          ...current,
+          [brainResponse.brain.projectId]: brainResponse.brain,
+        }));
         setSelectedProjectId(
           (current) =>
             projectsResponse.projects.find((project) => project.id === current)?.id ||
@@ -118,6 +130,29 @@ function App() {
     window.localStorage.removeItem(SESSION_STORAGE_KEY);
   }
 
+  async function handleBrainProviderChange(selectedProvider: string | null) {
+    const optimisticBrain = {
+      ...(aiAgentBrains[selectedProjectId] || getFallbackAiAgentBrain(selectedProjectId)),
+      selectedProvider,
+      status: selectedProvider ? `Configured with ${selectedProvider}` : 'Demo fallback active',
+    };
+
+    setAiAgentBrains((current) => ({
+      ...current,
+      [selectedProjectId]: optimisticBrain,
+    }));
+
+    try {
+      const response = await api.updateAiAgentBrain(selectedProjectId, selectedProvider);
+      setAiAgentBrains((current) => ({
+        ...current,
+        [response.brain.projectId]: response.brain,
+      }));
+    } catch {
+      // Keep the optimistic local update when the backend is unavailable.
+    }
+  }
+
   if (!session) {
     return <LoginScreen error={loginError} onLogin={handleLogin} />;
   }
@@ -158,9 +193,11 @@ function App() {
     return (
       <ProjectConnectorModule
         currentUser={session.user}
+        brain={aiAgentBrain}
         onBack={() => setActiveModule('chat')}
         onLogout={handleLogout}
         onSelectProject={setSelectedProjectId}
+        onUpdateBrainProvider={handleBrainProviderChange}
         projects={projects}
         selectedProject={selectedProject}
       />
@@ -169,6 +206,7 @@ function App() {
 
   return (
     <RevenueChat
+      aiAgentBrain={aiAgentBrain}
       currentUser={session.user}
       onLogout={handleLogout}
       onOpenArchitect={() => setActiveModule('architect')}

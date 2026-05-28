@@ -18,9 +18,10 @@ import {
 } from 'lucide-react';
 import { chatPrompts } from '../data/strategy';
 import { fallbackProjects } from '../data/demoProjects';
-import { api, Approval, Chat, ChatMessage, ChatMode, Connector, Project, User } from '../lib/api';
+import { api, AiAgentBrainConfig, Approval, Chat, ChatMessage, ChatMode, Connector, Project, User } from '../lib/api';
 
 type RevenueChatProps = {
+  aiAgentBrain: AiAgentBrainConfig;
   currentUser: User;
   onLogout: () => void;
   onOpenArchitect: () => void;
@@ -76,6 +77,7 @@ const fallbackConnectors: Connector[] = [
 ];
 
 export function RevenueChat({
+  aiAgentBrain,
   currentUser,
   onLogout,
   onOpenArchitect,
@@ -159,10 +161,10 @@ export function RevenueChat({
     setSelectedProjectId(projectId);
 
     try {
-      const [chatResponse, connectorResponse, approvalResponse] = await Promise.all([
-        api.getChats(projectId),
-        api.getConnectors(projectId),
-        api.getApprovals(projectId),
+        const [chatResponse, connectorResponse, approvalResponse] = await Promise.all([
+          api.getChats(projectId),
+          api.getConnectors(projectId),
+          api.getApprovals(projectId),
       ]);
       setChats(chatResponse.chats);
       setConnectors(connectorResponse.connectors);
@@ -186,13 +188,14 @@ export function RevenueChat({
     ]);
 
     try {
-      const response = await api.sendMessage(currentDraft, mode);
+      const response = await api.sendMessage(currentDraft, mode, selectedProjectId);
       setMessages((current) => [
         ...current.filter((message) => message.role !== 'assistant'),
         {
           id: `msg_assistant_${Date.now()}`,
           role: 'assistant',
           mode: response.mode,
+          agentProvider: response.agentProvider,
           content: response.content,
           table: response.table,
         },
@@ -324,12 +327,18 @@ export function RevenueChat({
         <div className="tool-strip" aria-label="Connected project tools">
           {activeConnectors.map((tool) => {
             const Icon = connectorIconMap[tool.id as keyof typeof connectorIconMap] || Settings;
+            const toolStatus =
+              tool.id === 'ai_agent_brain'
+                ? aiAgentBrain.selectedProvider
+                  ? `Configured with ${aiAgentBrain.selectedProvider}`
+                  : aiAgentBrain.status
+                : formatStatus(tool.status);
 
             return (
               <span key={tool.id}>
                 <Icon size={15} />
                 {tool.label}
-                <em>{formatStatus(tool.status)}</em>
+                <em>{toolStatus}</em>
               </span>
             );
           })}
@@ -400,6 +409,7 @@ export function RevenueChat({
             <div className="message-card assistant-card">
               <div className="mode-line">
                 <span>{mode} mode</span>
+                {assistantMessage?.agentProvider && <em>{assistantMessage.agentProvider}</em>}
                 {mode === 'Act' && <em>Final approval required</em>}
               </div>
 

@@ -1,11 +1,13 @@
 import { ArrowLeft, CheckCircle2, ExternalLink, PlugZap, Plus, Settings } from 'lucide-react';
-import { Connector, Project, User } from '../lib/api';
+import { AiAgentBrainConfig, Connector, Project, User } from '../lib/api';
 
 type ProjectConnectorModuleProps = {
+  brain: AiAgentBrainConfig;
   currentUser: User;
   onBack: () => void;
   onLogout: () => void;
   onSelectProject: (projectId: string) => void;
+  onUpdateBrainProvider: (selectedProvider: string | null) => void;
   projects: Project[];
   selectedProject: Project;
 };
@@ -18,16 +20,58 @@ function countConnectors(project: Project) {
   return project.connectors?.length || 0;
 }
 
-function ProjectConnectorCard({ connector }: { connector: Connector }) {
+function ProjectConnectorCard({
+  brain,
+  connector,
+  onUpdateBrainProvider,
+}: {
+  brain: AiAgentBrainConfig;
+  connector: Connector;
+  onUpdateBrainProvider: (selectedProvider: string | null) => void;
+}) {
+  const isBrainConnector = connector.id === 'ai_agent_brain';
+  const selectedProvider = brain.selectedProvider;
+  const currentStatus = isBrainConnector && selectedProvider ? `Configured with ${selectedProvider}` : connector.status;
+  const detail = isBrainConnector ? connector.detail : connector.detail;
+
   return (
     <article className="project-connector-card">
       <div>
         <PlugZap size={18} />
         <strong>{connector.label}</strong>
       </div>
-      <span>{formatStatus(connector.status)}</span>
-      <p>{connector.detail}</p>
+      <span>{formatStatus(currentStatus)}</span>
+      <p>{detail}</p>
       <em>{formatStatus(connector.mode)}</em>
+      {isBrainConnector && (
+        <div className="brain-provider-picker" aria-label="AI Agent Brain provider options">
+          <div className="brain-provider-current">
+            <strong>Current provider</strong>
+            <span>{selectedProvider || 'No provider selected'}</span>
+          </div>
+          <div className="brain-provider-grid">
+            {brain.providerOptions.map((provider) => (
+              <button
+                aria-pressed={selectedProvider === provider}
+                className={selectedProvider === provider ? 'brain-provider-button active' : 'brain-provider-button'}
+                key={provider}
+                onClick={() => onUpdateBrainProvider(provider)}
+                type="button"
+              >
+                {provider}
+              </button>
+            ))}
+            <button
+              aria-pressed={selectedProvider === null}
+              className={selectedProvider === null ? 'brain-provider-button active' : 'brain-provider-button'}
+              onClick={() => onUpdateBrainProvider(null)}
+              type="button"
+            >
+              Demo fallback
+            </button>
+          </div>
+        </div>
+      )}
       <button className="ghost-button" type="button">
         Configure
         <ExternalLink size={15} />
@@ -37,10 +81,12 @@ function ProjectConnectorCard({ connector }: { connector: Connector }) {
 }
 
 export function ProjectConnectorModule({
+  brain,
   currentUser,
   onBack,
   onLogout,
   onSelectProject,
+  onUpdateBrainProvider,
   projects,
   selectedProject,
 }: ProjectConnectorModuleProps) {
@@ -150,7 +196,12 @@ export function ProjectConnectorModule({
             {selectedConnectors.length > 0 ? (
               <div className="project-connector-grid">
                 {selectedConnectors.map((connector) => (
-                  <ProjectConnectorCard connector={connector} key={connector.id} />
+                  <ProjectConnectorCard
+                    brain={brain}
+                    connector={connector}
+                    key={connector.id}
+                    onUpdateBrainProvider={onUpdateBrainProvider}
+                  />
                 ))}
               </div>
             ) : (

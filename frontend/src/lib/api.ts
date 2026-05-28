@@ -18,11 +18,13 @@ export type Connector = {
   mode: string;
 };
 
-export type AiAgentBrainStatus = {
+export type AiAgentBrainConfig = {
+  projectId: string;
   id: string;
   label: string;
   status: string;
   providerMode: string;
+  selectedProvider: string | null;
   providerOptions: string[];
   responsibilities: string[];
 };
@@ -43,6 +45,7 @@ export type ChatMessage = {
   id: string;
   role: 'user' | 'assistant';
   mode?: ChatMode;
+  agentProvider?: string;
   content: string;
   table?: CampaignFinding[];
 };
@@ -156,7 +159,12 @@ export const api = {
       },
     }),
   getProjects: () => request<{ projects: Project[] }>('/api/projects'),
-  getAiAgentBrainStatus: () => request<{ brain: AiAgentBrainStatus }>('/api/ai-agent-brain'),
+  getAiAgentBrain: (projectId: string) => request<{ brain: AiAgentBrainConfig }>(`/api/ai-agent-brain?projectId=${projectId}`),
+  updateAiAgentBrain: (projectId: string, selectedProvider: string | null) =>
+    request<{ brain: AiAgentBrainConfig }>('/api/ai-agent-brain', {
+      method: 'POST',
+      body: JSON.stringify({ projectId, selectedProvider }),
+    }),
   getCampaignIntelligence: (projectId: string) =>
     request<{ intelligence: CampaignIntelligence }>(`/api/campaign-intelligence?projectId=${projectId}`),
   getChats: (projectId: string) => request<{ chats: Chat[] }>(`/api/chats?projectId=${projectId}`),
@@ -164,15 +172,16 @@ export const api = {
   getMessages: () => request<{ messages: ChatMessage[] }>('/api/messages'),
   getApprovals: (projectId: string) =>
     request<{ approvals: Approval[] }>(`/api/approvals?projectId=${projectId}`),
-  sendMessage: (message: string, mode: ChatMode) =>
+  sendMessage: (message: string, mode: ChatMode, projectId: string) =>
     request<{
       mode: ChatMode;
+      agentProvider?: string;
       content: string;
       table?: CampaignFinding[];
       approvalRequired?: boolean;
       proposedActions?: Approval[];
     }>('/api/chat', {
       method: 'POST',
-      body: JSON.stringify({ message, mode }),
+      body: JSON.stringify({ message, mode, projectId }),
     }),
 };
