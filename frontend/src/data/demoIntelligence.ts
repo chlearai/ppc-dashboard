@@ -1,6 +1,6 @@
 import { CampaignIntelligence } from '../lib/api';
 
-export const fallbackIntelligence: Record<string, CampaignIntelligence> = {
+export const workspaceIntelligence: Record<string, CampaignIntelligence> = {
   project_crystal_hues: {
     projectId: 'project_crystal_hues',
     projectName: 'Crystal Hues PPC',
@@ -61,6 +61,6 @@ export const fallbackIntelligence: Record<string, CampaignIntelligence> = {
   },
 };
 
-export function getFallbackIntelligence(projectId: string) {
-  return fallbackIntelligence[projectId] || fallbackIntelligence.project_crystal_hues;
+export function getWorkspaceIntelligence(projectId: string) {
+  return workspaceIntelligence[projectId] || workspaceIntelligence.project_crystal_hues;
 }

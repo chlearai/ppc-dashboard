@@ -1473,7 +1473,7 @@ td:first-child {
   padding: 10px 12px;
 }
 
-.demo-credentials {
+.workspace-credentials {
   background: #f4f7f8;
   border: 1px solid #dce5ea;
   border-radius: 8px;
@@ -1482,14 +1482,14 @@ td:first-child {
   padding: 12px;
 }
 
-.demo-credentials span {
+.workspace-credentials span {
   color: #687386;
   font-size: 0.76rem;
   font-weight: 850;
   text-transform: uppercase;
 }
 
-.demo-credentials strong {
+.workspace-credentials strong {
   color: #172033;
   font-size: 0.9rem;
 }
@@ -2005,6 +2005,79 @@ td:first-child {
 .source-list article strong {
   display: block;
   margin-bottom: 2px;
+}
+
+.source-note {
+  color: #536275;
+  display: inline-flex;
+  font-size: 0.72rem;
+  margin-top: 0.5rem;
+}
+
+.source-note a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.citation-list {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.citation-item {
+  align-items: flex-start;
+  background: #f6f8fa;
+  border: 1px solid #dce3eb;
+  border-radius: 8px;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: auto 1fr auto;
+  padding: 0.75rem 0.9rem;
+}
+
+.citation-item svg {
+  color: #546f91;
+  margin-top: 0.1rem;
+}
+
+.citation-item a {
+  color: #172033;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.citation-item span {
+  color: #536275;
+  display: block;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  margin-top: 0.15rem;
+}
+
+.citation-item em {
+  color: #6b7280;
+  font-size: 0.7rem;
+  font-style: normal;
+  text-transform: uppercase;
+}
+
+.citation-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+
+.citation-row a {
+  background: rgba(22, 101, 52, 0.06);
+  border: 1px solid rgba(22, 101, 52, 0.1);
+  border-radius: 999px;
+  color: #07665f;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.55rem;
+  text-decoration: none;
 }
 
 .campaign-status {
@@ -3347,7 +3420,7 @@ textarea {
   color: #ffffff;
 }
 
-.demo-credentials,
+.workspace-credentials,
 .approval-card,
 .connector-grid article,
 .management-project,

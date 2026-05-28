@@ -1,11 +1,17 @@
 import http from 'node:http';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { buildCampaignIntelligence, getIntegrationConfig } from './liveIntegrations.js';
 
 const HOST = process.env.HOST || '127.0.0.1';
 const PORT = Number(process.env.PORT || 8787);
+const DATA_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'data');
+const STATE_FILE = join(DATA_DIR, 'runtime-state.json');
 
-const demoTokenPrefix = 'demo-session';
+const workspaceSessionPrefix = 'workspace-session';
 
-const users = [
+let users = [
   {
     id: 'user_admin',
     name: 'Shailesh Kumar',
@@ -13,8 +19,8 @@ const users = [
     role: 'Workspace Admin',
     status: 'Active',
     lastActive: 'Today',
-    projectAccess: ['Crystal Hues PPC', 'Demo Ecommerce', 'Lead Gen Test'],
-    password: 'demo123',
+    projectAccess: ['Crystal Hues PPC', 'Ecommerce Growth', 'Lead Gen Test'],
+    password: 'adops123!',
   },
   {
     id: 'user_media_buyer',
@@ -23,8 +29,8 @@ const users = [
     role: 'Media Buyer',
     status: 'Active',
     lastActive: 'Yesterday',
-    projectAccess: ['Crystal Hues PPC', 'Demo Ecommerce'],
-    password: 'demo123',
+    projectAccess: ['Crystal Hues PPC', 'Ecommerce Growth'],
+    password: 'adops123!',
   },
   {
     id: 'user_analyst',
@@ -34,11 +40,11 @@ const users = [
     status: 'Invited',
     lastActive: 'Invitation pending',
     projectAccess: ['Crystal Hues PPC'],
-    password: 'demo123',
+    password: 'adops123!',
   },
 ];
 
-const projects = [
+let projects = [
   {
     id: 'project_crystal_hues',
     name: 'Crystal Hues PPC',
@@ -57,8 +63,8 @@ const projects = [
       {
         id: 'ai_agent_brain',
         label: 'AI Agent Brain',
-        status: 'Demo fallback active',
-        detail: 'Codex, Claude, or another AI agent orchestrates MCP data, Ask mode, Act mode, and approval-safe execution',
+        status: 'Not configured',
+        detail: 'Configure a provider or custom endpoint before AI actions can run',
         mode: 'provider_config_required',
       },
       {
@@ -71,8 +77,8 @@ const projects = [
       {
         id: 'meta_ads_mcp',
         label: 'Meta Ads MCP',
-        status: 'Ready to configure',
-        detail: 'Optional vetted MCP server for Meta account insights, audience estimates, and draft actions',
+        status: 'Not configured',
+        detail: 'Connect a vetted Meta Ads MCP endpoint',
         mode: 'configured_per_project',
       },
       {
@@ -92,8 +98,8 @@ const projects = [
     ],
   },
   {
-    id: 'project_demo_ecommerce',
-    name: 'Demo Ecommerce',
+    id: 'project_ecommerce_growth',
+    name: 'Ecommerce Growth',
     status: 'Meta connected',
     health: 'Needs Google Ads connection',
     monthlySpend: '₹4.8L',
@@ -109,8 +115,8 @@ const projects = [
       {
         id: 'meta_ads_mcp',
         label: 'Meta Ads MCP',
-        status: 'Ready to configure',
-        detail: 'Optional vetted MCP server for Meta account insights, audience estimates, and draft actions',
+        status: 'Not configured',
+        detail: 'Connect a vetted Meta Ads MCP endpoint',
         mode: 'configured_per_project',
       },
     ],
@@ -126,7 +132,7 @@ const projects = [
   },
 ];
 
-const chats = [
+let chats = [
   {
     id: 'chat_cpa_increase',
     projectId: 'project_crystal_hues',
@@ -149,7 +155,7 @@ const chats = [
   },
 ];
 
-const messages = [
+let messages = [
   {
     id: 'msg_user_1',
     role: 'user',
@@ -176,7 +182,7 @@ const messages = [
   },
 ];
 
-const approvals = [
+let approvals = [
   {
     id: 'approval_negative_keywords',
     projectId: 'project_crystal_hues',
@@ -205,9 +211,9 @@ const aiAgentBrainResponsibilities = [
   'Approval queue reasoning and risk summaries',
 ];
 
-const auditLogsByProject = Object.fromEntries(projects.map((project) => [project.id, []]));
-const campaignBooksByProject = Object.fromEntries(projects.map((project) => [project.id, []]));
-const aiAgentBrainStateByProject = Object.fromEntries(
+let auditLogsByProject = Object.fromEntries(projects.map((project) => [project.id, []]));
+let campaignBooksByProject = Object.fromEntries(projects.map((project) => [project.id, []]));
+let aiAgentBrainStateByProject = Object.fromEntries(
   projects.map((project) => [
     project.id,
     {
@@ -221,6 +227,134 @@ const aiAgentBrainStateByProject = Object.fromEntries(
     },
   ]),
 );
+
+function snapshotState() {
+  return {
+    users,
+    projects,
+    chats,
+    messages,
+    approvals,
+    aiAgentBrainStateByProject,
+    auditLogsByProject,
+    campaignBooksByProject,
+  };
+}
+
+function persistState() {
+  mkdirSync(DATA_DIR, { recursive: true });
+  writeFileSync(STATE_FILE, JSON.stringify(snapshotState(), null, 2));
+}
+
+function hydrateState(nextState) {
+  users = nextState.users || users;
+  projects = nextState.projects || projects;
+  chats = nextState.chats || chats;
+  messages = nextState.messages || messages;
+  approvals = nextState.approvals || approvals;
+  aiAgentBrainStateByProject = nextState.aiAgentBrainStateByProject || aiAgentBrainStateByProject;
+  auditLogsByProject = nextState.auditLogsByProject || auditLogsByProject;
+  campaignBooksByProject = nextState.campaignBooksByProject || campaignBooksByProject;
+}
+
+function decorateConnector(project, connector) {
+  const config = getIntegrationConfig();
+
+  if (connector.id === 'ai_agent_brain') {
+    const provider = aiAgentBrainStateByProject[project.id]?.selectedProvider;
+    const configured = Boolean(provider || config.aiAgentEndpointUrl);
+
+    return {
+      ...connector,
+      status: configured ? `Configured${provider ? ` with ${provider}` : ''}` : 'Not configured',
+      detail: configured
+        ? 'Agent orchestration is wired to the persisted project provider configuration'
+        : 'Configure a provider or custom endpoint before AI actions can run',
+    };
+  }
+
+  if (connector.id === 'google_ads') {
+    const configured = Boolean(config.googleAdsMcpUrl || config.googleAdsApiConfigured || config.googleAdsLiveConfigured);
+
+    return {
+      ...connector,
+      status: configured ? 'Configured' : 'Not configured',
+      detail: config.googleAdsMcpUrl
+        ? 'Google Ads MCP endpoint connected'
+        : config.googleAdsApiConfigured || config.googleAdsLiveConfigured
+          ? 'Google Ads API credentials configured'
+          : 'Connect Google Ads MCP or API credentials',
+    };
+  }
+
+  if (connector.id === 'meta_ads') {
+    const configured = Boolean(config.metaAdsApiConfigured || config.metaAdsLiveConfigured);
+
+    return {
+      ...connector,
+      status: configured ? 'Configured' : 'Not configured',
+      detail: configured ? 'Meta Marketing API credentials configured' : 'Connect Meta Marketing API credentials',
+    };
+  }
+
+  if (connector.id === 'meta_ads_mcp') {
+    const configured = Boolean(config.metaAdsMcpUrl);
+
+    return {
+      ...connector,
+      status: configured ? 'Configured' : 'Not configured',
+      detail: configured ? 'Meta Ads MCP endpoint connected' : 'Connect a vetted Meta Ads MCP endpoint',
+    };
+  }
+
+  if (connector.id === 'website') {
+    const configured = Boolean(config.websiteCrawlUrl);
+
+    return {
+      ...connector,
+      status: configured ? 'Configured' : 'Not configured',
+      detail: configured ? 'Website crawl endpoint configured' : 'Add a crawl endpoint for live landing page context',
+    };
+  }
+
+  if (connector.id === 'mcp_api') {
+    const configured = Boolean(
+      config.googleAdsMcpUrl ||
+        config.googleAdsApiConfigured ||
+        config.googleAdsLiveConfigured ||
+        config.metaAdsApiConfigured ||
+        config.metaAdsLiveConfigured ||
+        config.metaAdsMcpUrl,
+    );
+
+    return {
+      ...connector,
+      status: configured ? 'Configured' : 'Not configured',
+      detail: configured
+        ? 'MCP/API tooling connected'
+        : 'Configure Google Ads, Meta Ads, or a custom tool endpoint',
+    };
+  }
+
+  return connector;
+}
+
+function decorateProject(project) {
+  return {
+    ...project,
+    connectors: (project.connectors || []).map((connector) => decorateConnector(project, connector)),
+  };
+}
+
+if (existsSync(STATE_FILE)) {
+  try {
+    hydrateState(JSON.parse(readFileSync(STATE_FILE, 'utf8')));
+  } catch {
+    persistState();
+  }
+} else {
+  persistState();
+}
 
 function nowIso() {
   return new Date().toISOString();
@@ -245,6 +379,7 @@ function recordAuditLog(entry) {
   };
 
   getAuditLogs(projectId).unshift(auditLog);
+  persistState();
   return auditLog;
 }
 
@@ -271,12 +406,14 @@ function createCampaignBook(entry) {
   };
 
   books.unshift(campaignBook);
+  persistState();
   return campaignBook;
 }
 
 function getAiAgentBrain(projectId) {
   const brain = aiAgentBrainStateByProject[projectId] || aiAgentBrainStateByProject[projects[0].id];
-  const status = brain.selectedProvider ? `Configured with ${brain.selectedProvider}` : 'Demo fallback active';
+  const configured = Boolean(brain.selectedProvider || getIntegrationConfig().aiAgentEndpointUrl);
+  const status = configured ? `Configured${brain.selectedProvider ? ` with ${brain.selectedProvider}` : ''}` : 'Not configured';
 
   return {
     ...brain,
@@ -300,12 +437,13 @@ function updateAiAgentBrain(projectId, selectedProvider) {
       projectId,
       eventType: 'brain_provider_updated',
       title: 'AI Agent Brain provider updated',
-      detail: provider ? `Configured with ${provider}` : 'Reset to demo fallback',
+      detail: provider ? `Configured with ${provider}` : 'Cleared provider configuration',
       actor: 'Workspace admin',
-      provider: provider || 'Demo fallback active',
+      provider: provider || null,
     });
   }
 
+  persistState();
   return getAiAgentBrain(projectId);
 }
 
@@ -389,11 +527,11 @@ function getAuthorizedUser(request) {
   const authorization = request.headers.authorization || '';
   const token = authorization.startsWith('Bearer ') ? authorization.slice('Bearer '.length) : '';
 
-  if (!token.startsWith(demoTokenPrefix)) {
+  if (!token.startsWith(workspaceSessionPrefix)) {
     return null;
   }
 
-  const userId = token.replace(`${demoTokenPrefix}-`, '');
+  const userId = token.replace(`${workspaceSessionPrefix}-`, '');
   return users.find((user) => user.id === userId) || users[0];
 }
 
@@ -439,7 +577,12 @@ const server = http.createServer(async (request, response) => {
   }
 
   if (request.method === 'GET' && requestUrl.pathname === '/api/projects') {
-    jsonResponse(response, 200, { projects });
+    jsonResponse(response, 200, { projects: projects.map(decorateProject) });
+    return;
+  }
+
+  if (request.method === 'GET' && requestUrl.pathname === '/api/integrations') {
+    jsonResponse(response, 200, { integrations: getIntegrationConfig() });
     return;
   }
 
@@ -469,13 +612,8 @@ const server = http.createServer(async (request, response) => {
 
   if (request.method === 'GET' && requestUrl.pathname === '/api/campaign-intelligence') {
     const project = getProject(requestUrl);
-    jsonResponse(response, 200, {
-      intelligence: campaignIntelligence[project.id] || {
-        ...campaignIntelligence.project_crystal_hues,
-        projectId: project.id,
-        projectName: project.name,
-      },
-    });
+    const intelligence = await buildCampaignIntelligence(project, campaignIntelligence);
+    jsonResponse(response, 200, { intelligence });
     return;
   }
 
@@ -486,12 +624,12 @@ const server = http.createServer(async (request, response) => {
     const user = users.find((candidate) => candidate.email === email && candidate.password === password);
 
     if (!user) {
-      jsonResponse(response, 401, { error: 'Invalid demo credentials' });
+      jsonResponse(response, 401, { error: 'Invalid credentials' });
       return;
     }
 
     jsonResponse(response, 200, {
-      token: `${demoTokenPrefix}-${user.id}`,
+      token: `${workspaceSessionPrefix}-${user.id}`,
       user: publicUser(user),
     });
     return;
@@ -529,7 +667,7 @@ const server = http.createServer(async (request, response) => {
 
   if (request.method === 'GET' && requestUrl.pathname === '/api/connectors') {
     const project = getProject(requestUrl);
-    jsonResponse(response, 200, { connectors: project.connectors });
+    jsonResponse(response, 200, { connectors: decorateProject(project).connectors });
     return;
   }
 
@@ -584,7 +722,7 @@ const server = http.createServer(async (request, response) => {
       title: 'Campaign book saved',
       detail: `${approvedBy} approved and saved the campaign book from ${source}`,
       actor: approvedBy,
-      provider: agentProvider || 'Demo fallback active',
+      provider: agentProvider || null,
       relatedCampaignBookId: campaignBook.id,
     });
 
@@ -597,7 +735,7 @@ const server = http.createServer(async (request, response) => {
     const mode = body.mode === 'Act' ? 'Act' : 'Ask';
     const projectId = typeof body.projectId === 'string' ? body.projectId : projects[0].id;
     const brain = getAiAgentBrain(projectId);
-    const agentProvider = brain.selectedProvider || 'Demo fallback active';
+    const agentProvider = brain.selectedProvider || 'Not configured';
 
     if (mode === 'Act') {
       recordAuditLog({

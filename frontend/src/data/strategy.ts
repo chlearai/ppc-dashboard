@@ -25,6 +25,10 @@ export type Recommendation = {
   impact: string;
   risk: 'Low' | 'Medium' | 'High';
   confidence: 'High' | 'Medium' | 'Low';
+  sources?: {
+    label: string;
+    href: string;
+  }[];
 };
 
 export type PlanSection = {
@@ -95,6 +99,16 @@ export const recommendations: Recommendation[] = [
     impact: 'Cleaner reporting and faster budget decisions',
     risk: 'Low',
     confidence: 'High',
+    sources: [
+      {
+        label: 'Google Ads Search & SearchStream',
+        href: 'https://developers.google.com/google-ads/api/rest/common/search',
+      },
+      {
+        label: 'Google Ads keyword planning overview',
+        href: 'https://developers.google.com/google-ads/api/docs/keyword-planning/overview',
+      },
+    ],
   },
   {
     id: 2,
@@ -105,6 +119,12 @@ export const recommendations: Recommendation[] = [
     impact: 'Better learning velocity with controlled creative testing',
     risk: 'Medium',
     confidence: 'Medium',
+    sources: [
+      {
+        label: 'Meta Marketing API Insights',
+        href: 'https://developers.facebook.com/docs/marketing-api/insights/',
+      },
+    ],
   },
   {
     id: 3,
@@ -115,6 +135,16 @@ export const recommendations: Recommendation[] = [
     impact: 'Lower wasted spend in the first two weeks',
     risk: 'Low',
     confidence: 'Medium',
+    sources: [
+      {
+        label: 'Google Ads keyword planning overview',
+        href: 'https://developers.google.com/google-ads/api/docs/keyword-planning/overview',
+      },
+      {
+        label: 'Google Ads search reporting',
+        href: 'https://developers.google.com/google-ads/api/rest/common/search',
+      },
+    ],
   },
 ];
 
@@ -264,8 +294,8 @@ export const capabilityCards = [
 ];
 
 export const sourceHealth = [
-  { label: 'Google Ads MCP', status: 'Ready to configure', icon: CheckCircle2 },
-  { label: 'Meta Marketing API', status: 'Ready to configure', icon: CheckCircle2 },
+  { label: 'Google Ads MCP', status: 'Not configured', icon: CheckCircle2 },
+  { label: 'Meta Marketing API', status: 'Not configured', icon: CheckCircle2 },
   { label: 'Forecast confidence', status: 'Mixed by platform', icon: TriangleAlert },
   { label: 'AI approval gate', status: 'Required for writes', icon: ShieldCheck },
 ];

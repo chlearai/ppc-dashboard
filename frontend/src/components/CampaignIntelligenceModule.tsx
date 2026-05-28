@@ -1,4 +1,4 @@
-import { ArrowLeft, BarChart3, Bell, Target, TrendingDown } from 'lucide-react';
+import { ArrowLeft, BarChart3, Bell, ExternalLink, Target, TrendingDown } from 'lucide-react';
 import { recommendations, sourceHealth } from '../data/strategy';
 import { CampaignIntelligence, User } from '../lib/api';
 
@@ -54,6 +54,7 @@ export function CampaignIntelligenceModule({
               <span>Last 7 days</span>
               <span>{intelligence.metrics[0]?.value || '87%'} confidence</span>
               <span>{intelligence.platforms.length} active platforms</span>
+              {intelligence.liveDataMode && <span>Live data</span>}
             </div>
           </div>
 
@@ -85,11 +86,11 @@ export function CampaignIntelligenceModule({
             </div>
 
             <div className="platform-split-grid">
-              {intelligence.platforms.map((platform) => (
-                <article key={platform.platform}>
-                  <div>
-                    <Target size={18} />
-                    <strong>{platform.platform}</strong>
+            {intelligence.platforms.map((platform) => (
+              <article key={platform.platform}>
+                <div>
+                  <Target size={18} />
+                  <strong>{platform.platform}</strong>
                   </div>
                   <dl>
                     <div>
@@ -106,6 +107,11 @@ export function CampaignIntelligenceModule({
                     </div>
                   </dl>
                   <p>{platform.signal}</p>
+                  {platform.sourceLabel && (
+                    <small className="source-note">
+                      Source: {platform.sourceHref ? <a href={platform.sourceHref}>{platform.sourceLabel}</a> : platform.sourceLabel}
+                    </small>
+                  )}
                 </article>
               ))}
             </div>
@@ -131,20 +137,54 @@ export function CampaignIntelligenceModule({
             </div>
 
             <div className="source-list">
-              {sourceHealth.map((source) => {
-                const Icon = source.icon;
+              {intelligence.sources && intelligence.sources.length > 0
+                ? intelligence.sources.map((source) => (
+                    <article key={source.source}>
+                      <BarChart3 size={18} />
+                      <div>
+                        <strong>{source.source}</strong>
+                        <span>{source.available ? source.detail : 'Unavailable'}</span>
+                      </div>
+                    </article>
+                  ))
+                : sourceHealth.map((source) => {
+                    const Icon = source.icon;
 
-                return (
-                  <article key={source.label}>
-                    <Icon size={18} />
-                    <div>
-                      <strong>{source.label}</strong>
-                      <span>{source.status}</span>
-                    </div>
-                  </article>
-                );
-              })}
+                    return (
+                      <article key={source.label}>
+                        <Icon size={18} />
+                        <div>
+                          <strong>{source.label}</strong>
+                          <span>{source.status}</span>
+                        </div>
+                      </article>
+                    );
+                  })}
             </div>
+
+            {intelligence.citations && intelligence.citations.length > 0 && (
+              <div className="citation-list" aria-label="Source citations">
+                <div className="users-table-head compact">
+                  <div>
+                    <p>Evidence</p>
+                    <h2>Source citations</h2>
+                  </div>
+                </div>
+
+                {intelligence.citations.map((citation) => (
+                  <article className="citation-item" key={citation.label}>
+                    <ExternalLink size={16} />
+                    <div>
+                      <a href={citation.href} rel="noreferrer" target="_blank">
+                        {citation.label}
+                      </a>
+                      <span>{citation.detail}</span>
+                    </div>
+                    <em>{citation.kind}</em>
+                  </article>
+                ))}
+              </div>
+            )}
           </aside>
         </section>
 
@@ -175,6 +215,15 @@ export function CampaignIntelligenceModule({
                     <span className={`confidence-${item.confidence.toLowerCase()}`}>{item.confidence} confidence</span>
                     <span>{item.impact}</span>
                   </div>
+                  {item.sources && item.sources.length > 0 && (
+                    <div className="citation-row">
+                      {item.sources.map((source) => (
+                        <a href={source.href} key={source.label} rel="noreferrer" target="_blank">
+                          {source.label}
+                        </a>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </article>
             ))}

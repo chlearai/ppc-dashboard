@@ -3,18 +3,18 @@ import { expect, type Page, test } from '@playwright/test';
 async function login(page: Page) {
   await page.goto('/');
   await page.getByLabel('Work email').fill('admin@adops.test');
-  await page.getByLabel('Password').fill('demo123');
+  await page.getByLabel('Password').fill('adops123!');
   await page.getByRole('button', { name: 'Sign in' }).click();
 }
 
-test('shows the demo SaaS login screen before the workspace', async ({ page }) => {
+test('shows the workspace login screen before the workspace', async ({ page }) => {
   await page.goto('/');
 
   await expect(page.getByRole('heading', { name: 'AdOps Intelligence' })).toBeVisible();
   await expect(page.getByLabel('Work email')).toBeVisible();
   await expect(page.getByLabel('Password')).toBeVisible();
   await expect(page.getByText('admin@adops.test')).toBeVisible();
-  await expect(page.getByText('demo123')).toBeVisible();
+  await expect(page.getByText('adops123!')).toBeVisible();
 });
 
 test('renders the AI revenue chat workspace', async ({ page }) => {
@@ -63,11 +63,15 @@ test('opens project and connector management module', async ({ page }) => {
   await expect(page.getByRole('button', { name: /Crystal Hues PPC/ })).toBeVisible();
   await expect(page.getByLabel('Connector management').getByText('Google + Meta connected')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Crystal Hues PPC connectors' })).toBeVisible();
-  await expect(page.getByRole('article').filter({ hasText: 'Google Ads' }).getByText('Read + draft actions')).toBeVisible();
-  await expect(page.getByRole('article').filter({ hasText: 'Google Ads' }).getByText('read write with approval')).toBeVisible();
-  await expect(page.getByRole('article').filter({ hasText: 'Meta Ads MCP' }).getByText('Ready to configure')).toBeVisible();
-  await expect(page.getByRole('article').filter({ hasText: 'Meta Ads MCP' }).getByText('configured per project')).toBeVisible();
-  await expect(page.getByRole('article').filter({ hasText: 'AI Agent Brain' }).getByText('Codex, Claude, or another AI agent orchestrates MCP data, Ask mode, Act mode, and approval-safe execution')).toBeVisible();
+  await expect(page.getByRole('article').filter({ hasText: 'Google Ads' }).getByText('Not configured').first()).toBeVisible();
+  await expect(
+    page.getByRole('article').filter({ hasText: 'Google Ads' }).getByText('Connect Google Ads MCP or API credentials'),
+  ).toBeVisible();
+  await expect(page.getByRole('article').filter({ hasText: 'Meta Ads MCP' }).getByText('Not configured')).toBeVisible();
+  await expect(page.getByRole('article').filter({ hasText: 'Meta Ads MCP' }).getByText('Connect a vetted Meta Ads MCP endpoint')).toBeVisible();
+  const aiBrainCard = page.getByRole('article').filter({ hasText: 'AI Agent Brain' });
+  await expect(aiBrainCard).toBeVisible();
+  await expect(aiBrainCard.getByText(/Configured with|No provider selected|Not configured/)).toBeVisible();
   await expect(page.getByRole('article').filter({ hasText: 'AI Agent Brain' }).getByRole('button', { name: 'Claude' })).toBeVisible();
   await page.getByRole('button', { name: 'Claude' }).click();
   await expect(page.getByRole('article').filter({ hasText: 'AI Agent Brain' }).getByText('Configured with Claude')).toBeVisible();
@@ -131,6 +135,8 @@ test('opens campaign intelligence dashboard with project scoped metrics', async 
   await expect(page.getByRole('heading', { name: 'Platform split' })).toBeVisible();
   await expect(page.getByRole('article').filter({ hasText: 'Brand search is carrying efficiency' }).getByText('Google Ads')).toBeVisible();
   await expect(page.getByRole('article').filter({ hasText: 'Prospecting fatigue is raising acquisition cost' }).getByText('Meta Ads')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Source citations' })).toBeVisible();
+  await expect(page.getByLabel('Source citations').getByRole('link', { name: 'Google Ads search reporting' })).toBeVisible();
   await expect(page.getByRole('columnheader', { name: 'Campaign' })).toBeVisible();
   await expect(page.getByText('Brand Search - India')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Why performance changed' })).toBeVisible();
@@ -146,7 +152,7 @@ test('opens campaign intelligence dashboard with project scoped metrics', async 
   await expect(page.getByRole('heading', { name: 'How can I help with your campaigns?' })).toBeVisible();
 });
 
-test('logs out of the demo SaaS session', async ({ page }) => {
+test('logs out of the workspace session', async ({ page }) => {
   await login(page);
 
   await page.getByRole('button', { name: 'Logout' }).click();

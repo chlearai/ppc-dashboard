@@ -67,7 +67,7 @@ function ProjectConnectorCard({
               onClick={() => onUpdateBrainProvider(null)}
               type="button"
             >
-              Demo fallback
+              No provider
             </button>
           </div>
         </div>

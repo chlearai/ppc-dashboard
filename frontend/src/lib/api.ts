@@ -106,6 +106,8 @@ export type IntelligenceMetric = {
   value: string;
   delta: string;
   status: 'good' | 'watch' | 'risk';
+  sourceLabel?: string;
+  sourceHref?: string;
 };
 
 export type PlatformMetric = {
@@ -114,6 +116,8 @@ export type PlatformMetric = {
   roas: string;
   cpl: string;
   signal: string;
+  sourceLabel?: string;
+  sourceHref?: string;
 };
 
 export type CampaignRow = {
@@ -147,6 +151,20 @@ export type CampaignIntelligence = {
   campaigns: CampaignRow[];
   insight: CampaignInsight;
   alerts: CampaignAlert[];
+  citations?: SourceCitation[];
+  sources?: {
+    source: string;
+    detail: string;
+    available: boolean;
+  }[];
+  liveDataMode?: boolean;
+};
+
+export type SourceCitation = {
+  label: string;
+  detail: string;
+  href: string;
+  kind: 'live' | 'docs' | 'research';
 };
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8787';

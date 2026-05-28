@@ -10,12 +10,12 @@ const aiAgentBrainResponsibilities = [
   'Approval queue reasoning and risk summaries',
 ];
 
-export function getFallbackAiAgentBrain(projectId: string): AiAgentBrainConfig {
+export function getWorkspaceAiAgentBrain(projectId: string): AiAgentBrainConfig {
   return {
     projectId,
     id: 'ai_agent_brain',
     label: 'AI Agent Brain',
-    status: 'Demo fallback active',
+    status: 'Not configured',
     providerMode: 'provider_config_required',
     selectedProvider: null,
     providerOptions: aiAgentBrainProviderOptions,
@@ -23,7 +23,7 @@ export function getFallbackAiAgentBrain(projectId: string): AiAgentBrainConfig {
   };
 }
 
-export const fallbackProjects: Project[] = [
+export const workspaceProjects: Project[] = [
   {
     id: 'project_crystal_hues',
     name: 'Crystal Hues PPC',
@@ -42,8 +42,8 @@ export const fallbackProjects: Project[] = [
       {
         id: 'ai_agent_brain',
         label: 'AI Agent Brain',
-        status: 'Demo fallback active',
-        detail: 'Codex, Claude, or another AI agent orchestrates MCP data, Ask mode, Act mode, and approval-safe execution',
+        status: 'Not configured',
+        detail: 'Configure a provider or custom endpoint before AI actions can run',
         mode: 'provider_config_required',
       },
       {
@@ -56,8 +56,8 @@ export const fallbackProjects: Project[] = [
       {
         id: 'meta_ads_mcp',
         label: 'Meta Ads MCP',
-        status: 'Ready to configure',
-        detail: 'Optional vetted MCP server for Meta account insights, audience estimates, and draft actions',
+        status: 'Not configured',
+        detail: 'Connect a vetted Meta Ads MCP endpoint',
         mode: 'configured_per_project',
       },
       { id: 'website', label: 'Website', status: 'connected', detail: 'Landing page context', mode: 'read_only' },
@@ -71,8 +71,8 @@ export const fallbackProjects: Project[] = [
     ],
   },
   {
-    id: 'project_demo_ecommerce',
-    name: 'Demo Ecommerce',
+    id: 'project_ecommerce_growth',
+    name: 'Ecommerce Growth',
     status: 'Meta connected',
     health: 'Needs Google Ads connection',
     monthlySpend: '₹4.8L',
@@ -88,15 +88,15 @@ export const fallbackProjects: Project[] = [
       {
         id: 'ai_agent_brain',
         label: 'AI Agent Brain',
-        status: 'Demo fallback active',
-        detail: 'Codex, Claude, or another AI agent orchestrates MCP data, Ask mode, Act mode, and approval-safe execution',
+        status: 'Not configured',
+        detail: 'Configure a provider or custom endpoint before AI actions can run',
         mode: 'provider_config_required',
       },
       {
         id: 'meta_ads_mcp',
         label: 'Meta Ads MCP',
-        status: 'Ready to configure',
-        detail: 'Optional vetted MCP server for Meta account insights, audience estimates, and draft actions',
+        status: 'Not configured',
+        detail: 'Connect a vetted Meta Ads MCP endpoint',
         mode: 'configured_per_project',
       },
     ],

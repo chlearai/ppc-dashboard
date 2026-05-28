@@ -17,7 +17,6 @@ import {
   Users,
 } from 'lucide-react';
 import { chatPrompts } from '../data/strategy';
-import { fallbackProjects } from '../data/demoProjects';
 import { api, AiAgentBrainConfig, Approval, Chat, ChatMessage, ChatMode, Connector, Project, User } from '../lib/api';
 
 type RevenueChatProps = {
@@ -29,52 +28,6 @@ type RevenueChatProps = {
   onOpenProjects: () => void;
   onOpenUsers: () => void;
 };
-
-const fallbackChats: Chat[] = [
-  { id: 'chat_cpa_increase', projectId: 'project_crystal_hues', title: 'Why did CPA increase this week?' },
-  { id: 'chat_wasted_spend', projectId: 'project_crystal_hues', title: 'Find wasted spend' },
-  { id: 'chat_scale_winners', projectId: 'project_crystal_hues', title: 'Scale winning campaigns' },
-  { id: 'chat_campaign_plan', projectId: 'project_crystal_hues', title: 'Create campaign plan' },
-];
-
-const fallbackConnectors: Connector[] = [
-  {
-    id: 'google_ads',
-    label: 'Google Ads',
-    status: 'connected',
-    detail: 'Read + draft actions',
-    mode: 'read_write_with_approval',
-  },
-  {
-    id: 'ai_agent_brain',
-    label: 'AI Agent Brain',
-    status: 'Demo fallback active',
-    detail: 'Codex, Claude, or another AI agent orchestrates MCP data, Ask mode, Act mode, and approval-safe execution',
-    mode: 'provider_config_required',
-  },
-  {
-    id: 'meta_ads',
-    label: 'Meta Ads',
-    status: 'connected',
-    detail: 'Read + draft actions',
-    mode: 'read_write_with_approval',
-  },
-  {
-    id: 'meta_ads_mcp',
-    label: 'Meta Ads MCP',
-    status: 'Ready to configure',
-    detail: 'Optional vetted MCP server for Meta account insights, audience estimates, and draft actions',
-    mode: 'configured_per_project',
-  },
-  { id: 'website', label: 'Website', status: 'connected', detail: 'Landing page context', mode: 'read_only' },
-  {
-    id: 'mcp_api',
-    label: 'MCP/API',
-    status: 'project_scoped',
-    detail: 'Google Ads MCP, Meta Marketing API, custom tools',
-    mode: 'configured_per_project',
-  },
-];
 
 export function RevenueChat({
   aiAgentBrain,
@@ -88,19 +41,20 @@ export function RevenueChat({
   const [mode, setMode] = useState<ChatMode>('Ask');
   const [draft, setDraft] = useState(chatPrompts[0].prompt);
   const [showSetup, setShowSetup] = useState(false);
-  const [projects, setProjects] = useState<Project[]>(fallbackProjects);
-  const [selectedProjectId, setSelectedProjectId] = useState(fallbackProjects[0].id);
-  const [chats, setChats] = useState<Chat[]>(fallbackChats);
-  const [connectors, setConnectors] = useState<Connector[]>(fallbackConnectors);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState('');
+  const [chats, setChats] = useState<Chat[]>([]);
+  const [connectors, setConnectors] = useState<Connector[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [approvals, setApprovals] = useState<Approval[]>([]);
   const [campaignBookNotice, setCampaignBookNotice] = useState<string>();
-  const [apiStatus, setApiStatus] = useState<'live' | 'fallback'>('fallback');
+  const [apiStatus, setApiStatus] = useState<'loading' | 'live' | 'error'>('loading');
+  const [workspaceError, setWorkspaceError] = useState<string>();
 
-  const selectedProject = projects.find((project) => project.id === selectedProjectId) || projects[0];
+  const selectedProject = projects.find((project) => project.id === selectedProjectId) || null;
   const userMessage = messages.find((message) => message.role === 'user');
   const assistantMessage = messages.find((message) => message.role === 'assistant');
-  const activeConnectors = connectors.length > 0 ? connectors : fallbackConnectors;
+  const activeConnectors = connectors;
 
   const connectorIconMap = useMemo(
     () => ({
@@ -127,9 +81,19 @@ export function RevenueChat({
 
         if (ignore) return;
 
-        const firstProject = projectResponse.projects[0] || fallbackProjects[0];
+        const firstProject = projectResponse.projects[0] || null;
         setProjects(projectResponse.projects);
-        setSelectedProjectId(firstProject.id);
+        setSelectedProjectId(firstProject?.id || '');
+
+        if (!firstProject) {
+          setChats([]);
+          setConnectors([]);
+          setMessages([]);
+          setApprovals([]);
+          setApiStatus('error');
+          setWorkspaceError('No projects are configured in the backend.');
+          return;
+        }
 
         const [chatResponse, connectorResponse, messageResponse, approvalResponse] = await Promise.all([
           api.getChats(firstProject.id),
@@ -145,9 +109,11 @@ export function RevenueChat({
         setMessages(messageResponse.messages);
         setApprovals(approvalResponse.approvals);
         setApiStatus('live');
+        setWorkspaceError(undefined);
       } catch {
         if (ignore) return;
-        setApiStatus('fallback');
+        setApiStatus('error');
+        setWorkspaceError('Unable to load chat data from the backend.');
       }
     }
 
@@ -159,6 +125,7 @@ export function RevenueChat({
   }, []);
 
   async function selectProject(projectId: string) {
+    const previousProjectId = selectedProjectId;
     setSelectedProjectId(projectId);
     setCampaignBookNotice(undefined);
 
@@ -172,14 +139,17 @@ export function RevenueChat({
       setConnectors(connectorResponse.connectors);
       setApprovals(approvalResponse.approvals);
       setApiStatus('live');
+      setWorkspaceError(undefined);
     } catch {
-      setChats(fallbackChats);
-      setConnectors(fallbackConnectors);
-      setApiStatus('fallback');
+      setSelectedProjectId(previousProjectId);
+      setApiStatus('error');
+      setWorkspaceError('Unable to switch projects from the backend.');
     }
   }
 
   async function approveAndSaveCampaignBook() {
+    if (!selectedProject) return;
+
     const approvedActions =
       approvals.length > 0
         ? approvals.map((approval) => approval.title)
@@ -204,7 +174,8 @@ export function RevenueChat({
       setApiStatus('live');
     } catch {
       setCampaignBookNotice('Campaign book save failed');
-      setApiStatus('fallback');
+      setApiStatus('error');
+      setWorkspaceError('Unable to save the campaign book to the backend.');
     }
   }
 
@@ -237,9 +208,27 @@ export function RevenueChat({
       }
 
       setApiStatus('live');
+      setWorkspaceError(undefined);
     } catch {
-      setApiStatus('fallback');
+      setApiStatus('error');
+      setWorkspaceError('Unable to send messages to the backend.');
     }
+  }
+
+  if (!selectedProject) {
+    return (
+      <main className="chatgpt-shell">
+        <section className="chatgpt-main">
+          <div className="assistant-intro">
+            <div className="assistant-orb">
+              <Sparkles size={24} />
+            </div>
+            <h1>Loading workspace</h1>
+            <p>{workspaceError || 'Fetching project and connector state from the backend.'}</p>
+          </div>
+        </section>
+      </main>
+    );
   }
 
   return (
@@ -358,11 +347,12 @@ export function RevenueChat({
         <div className="tool-strip" aria-label="Connected project tools">
           {activeConnectors.map((tool) => {
             const Icon = connectorIconMap[tool.id as keyof typeof connectorIconMap] || Settings;
+            const selectedProvider = aiAgentBrain?.selectedProvider;
             const toolStatus =
               tool.id === 'ai_agent_brain'
-                ? aiAgentBrain.selectedProvider
-                  ? `Configured with ${aiAgentBrain.selectedProvider}`
-                  : aiAgentBrain.status
+                ? selectedProvider
+                  ? `Configured with ${selectedProvider}`
+                  : aiAgentBrain?.status || 'Not configured'
                 : formatStatus(tool.status);
 
             return (

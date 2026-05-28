@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { LockKeyhole, Sparkles } from 'lucide-react';
-import { DEMO_EMAIL, DEMO_PASSWORD } from '../data/demoAuth';
+import { WORKSPACE_EMAIL, WORKSPACE_PASSWORD } from '../data/workspaceAuth';
 
 type LoginScreenProps = {
   error?: string;
@@ -8,8 +8,8 @@ type LoginScreenProps = {
 };
 
 export function LoginScreen({ error, onLogin }: LoginScreenProps) {
-  const [email, setEmail] = useState(DEMO_EMAIL);
-  const [password, setPassword] = useState(DEMO_PASSWORD);
+  const [email, setEmail] = useState(WORKSPACE_EMAIL);
+  const [password, setPassword] = useState(WORKSPACE_PASSWORD);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function submitLogin(event: FormEvent<HTMLFormElement>) {
@@ -25,7 +25,7 @@ export function LoginScreen({ error, onLogin }: LoginScreenProps) {
 
   return (
     <main className="login-shell">
-      <section className="login-panel" aria-label="Demo SaaS login">
+      <section className="login-panel" aria-label="Workspace login">
         <div className="login-brand">
           <div className="brand-mark-small">
             <Sparkles size={18} />
@@ -38,7 +38,7 @@ export function LoginScreen({ error, onLogin }: LoginScreenProps) {
 
         <div className="login-copy">
           <h2>Sign in to your PPC workspace</h2>
-          <p>Use the demo workspace account to review auth, users, projects, and the AI campaign chat.</p>
+          <p>Use the workspace account to review auth, users, projects, and the AI campaign chat.</p>
         </div>
 
         <form className="login-form" onSubmit={submitLogin}>
@@ -72,10 +72,10 @@ export function LoginScreen({ error, onLogin }: LoginScreenProps) {
           </button>
         </form>
 
-        <div className="demo-credentials" aria-label="Demo credentials">
-          <span>Demo account</span>
-          <strong>{DEMO_EMAIL}</strong>
-          <strong>{DEMO_PASSWORD}</strong>
+        <div className="workspace-credentials" aria-label="Workspace credentials">
+          <span>Workspace account</span>
+          <strong>{WORKSPACE_EMAIL}</strong>
+          <strong>{WORKSPACE_PASSWORD}</strong>
         </div>
       </section>
     </main>
