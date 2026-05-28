@@ -1,13 +1,17 @@
 import http from 'node:http';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildCampaignIntelligence, getIntegrationConfig } from './liveIntegrations.js';
+import { createRuntimeStateStore } from './runtimeStateStore.js';
 
 const HOST = process.env.HOST || '127.0.0.1';
 const PORT = Number(process.env.PORT || 8787);
 const DATA_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'data');
 const STATE_FILE = join(DATA_DIR, 'runtime-state.json');
+const runtimeStateStore = createRuntimeStateStore({
+  databaseUrl: process.env.DATABASE_URL || null,
+  filePath: STATE_FILE,
+});
 
 const workspaceSessionPrefix = 'workspace-session';
 
@@ -241,9 +245,8 @@ function snapshotState() {
   };
 }
 
-function persistState() {
-  mkdirSync(DATA_DIR, { recursive: true });
-  writeFileSync(STATE_FILE, JSON.stringify(snapshotState(), null, 2));
+async function persistState() {
+  await runtimeStateStore.save(snapshotState());
 }
 
 function hydrateState(nextState) {
@@ -346,16 +349,6 @@ function decorateProject(project) {
   };
 }
 
-if (existsSync(STATE_FILE)) {
-  try {
-    hydrateState(JSON.parse(readFileSync(STATE_FILE, 'utf8')));
-  } catch {
-    persistState();
-  }
-} else {
-  persistState();
-}
-
 function nowIso() {
   return new Date().toISOString();
 }
@@ -364,7 +357,7 @@ function getAuditLogs(projectId) {
   return auditLogsByProject[projectId] || auditLogsByProject[projects[0].id];
 }
 
-function recordAuditLog(entry) {
+async function recordAuditLog(entry) {
   const projectId = entry.projectId || projects[0].id;
   const auditLog = {
     id: `audit_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
@@ -379,7 +372,7 @@ function recordAuditLog(entry) {
   };
 
   getAuditLogs(projectId).unshift(auditLog);
-  persistState();
+  await persistState();
   return auditLog;
 }
 
@@ -387,7 +380,7 @@ function getCampaignBooks(projectId) {
   return campaignBooksByProject[projectId] || campaignBooksByProject[projects[0].id];
 }
 
-function createCampaignBook(entry) {
+async function createCampaignBook(entry) {
   const projectId = entry.projectId || projects[0].id;
   const books = getCampaignBooks(projectId);
   const campaignBook = {
@@ -406,7 +399,7 @@ function createCampaignBook(entry) {
   };
 
   books.unshift(campaignBook);
-  persistState();
+  await persistState();
   return campaignBook;
 }
 
@@ -421,7 +414,7 @@ function getAiAgentBrain(projectId) {
   };
 }
 
-function updateAiAgentBrain(projectId, selectedProvider) {
+async function updateAiAgentBrain(projectId, selectedProvider) {
   const brain = aiAgentBrainStateByProject[projectId] || aiAgentBrainStateByProject[projects[0].id];
   const provider = selectedProvider || null;
 
@@ -433,7 +426,7 @@ function updateAiAgentBrain(projectId, selectedProvider) {
   brain.selectedProvider = provider;
 
   if (previousProvider !== provider) {
-    recordAuditLog({
+    await recordAuditLog({
       projectId,
       eventType: 'brain_provider_updated',
       title: 'AI Agent Brain provider updated',
@@ -443,7 +436,7 @@ function updateAiAgentBrain(projectId, selectedProvider) {
     });
   }
 
-  persistState();
+  await persistState();
   return getAiAgentBrain(projectId);
 }
 
@@ -599,7 +592,7 @@ const server = http.createServer(async (request, response) => {
     const body = await parseBody(request);
     const projectId = typeof body.projectId === 'string' ? body.projectId : projects[0].id;
     const selectedProvider = typeof body.selectedProvider === 'string' ? body.selectedProvider : null;
-    const brain = updateAiAgentBrain(projectId, selectedProvider);
+    const brain = await updateAiAgentBrain(projectId, selectedProvider);
 
     if (!brain) {
       jsonResponse(response, 400, { error: 'Invalid AI Agent Brain provider' });
@@ -705,7 +698,7 @@ const server = http.createServer(async (request, response) => {
     const source = typeof body.source === 'string' && body.source.trim() ? body.source.trim() : 'Act mode';
     const agentProvider = typeof body.agentProvider === 'string' && body.agentProvider.trim() ? body.agentProvider.trim() : null;
 
-    const campaignBook = createCampaignBook({
+    const campaignBook = await createCampaignBook({
       projectId,
       title,
       summary,
@@ -716,7 +709,7 @@ const server = http.createServer(async (request, response) => {
       agentProvider,
     });
 
-    const auditLog = recordAuditLog({
+    const auditLog = await recordAuditLog({
       projectId,
       eventType: 'campaign_book_saved',
       title: 'Campaign book saved',
@@ -738,7 +731,7 @@ const server = http.createServer(async (request, response) => {
     const agentProvider = brain.selectedProvider || 'Not configured';
 
     if (mode === 'Act') {
-      recordAuditLog({
+      await recordAuditLog({
         projectId,
         eventType: 'act_plan_drafted',
         title: 'Act mode plan drafted',
@@ -765,7 +758,7 @@ const server = http.createServer(async (request, response) => {
       table: messages[1].table,
     });
 
-    recordAuditLog({
+    await recordAuditLog({
       projectId,
       eventType: 'ask_insight_generated',
       title: 'Ask mode answer generated',
@@ -778,6 +771,13 @@ const server = http.createServer(async (request, response) => {
 
   jsonResponse(response, 404, { error: 'Not found' });
 });
+const initialState = await runtimeStateStore.load();
+
+if (initialState) {
+  hydrateState(initialState);
+} else {
+  await persistState();
+}
 
 server.listen(PORT, HOST, () => {
   console.log(`PPC Dashboard backend running on http://${HOST}:${PORT}`);
