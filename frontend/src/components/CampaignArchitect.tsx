@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { ArrowLeft, Target } from 'lucide-react';
 import {
   architectureRows,
   capabilityCards,
@@ -8,8 +9,15 @@ import {
   planSections,
   strategyRationale,
 } from '../data/strategy';
+import { User } from '../lib/api';
 
-export function CampaignArchitect() {
+type CampaignArchitectProps = {
+  currentUser?: User;
+  onBack?: () => void;
+  onLogout?: () => void;
+};
+
+function CampaignArchitectContent() {
   const [selectedQuestion, setSelectedQuestion] = useState(0);
 
   const activeQuestion = intakeQuestions[selectedQuestion];
@@ -216,5 +224,46 @@ export function CampaignArchitect() {
         </div>
       </section>
     </section>
+  );
+}
+
+export function CampaignArchitect({ currentUser, onBack, onLogout }: CampaignArchitectProps) {
+  if (!currentUser || !onBack || !onLogout) {
+    return <CampaignArchitectContent />;
+  }
+
+  return (
+    <main className="intelligence-shell">
+      <aside className="users-sidebar">
+        <div className="sidebar-brand">
+          <div className="brand-mark-small">
+            <Target size={18} />
+          </div>
+          <div>
+            <strong>AdOps Intelligence</strong>
+            <span>Campaign planning</span>
+          </div>
+        </div>
+
+        <button className="new-chat-button" onClick={onBack} type="button">
+          <ArrowLeft size={17} />
+          Back to AI chat
+        </button>
+
+        <div className="sidebar-user-card">
+          <span>{currentUser.role}</span>
+          <strong>{currentUser.name}</strong>
+          <small>{currentUser.email}</small>
+        </div>
+
+        <button className="sidebar-logout" onClick={onLogout} type="button">
+          Logout
+        </button>
+      </aside>
+
+      <section className="intelligence-main">
+        <CampaignArchitectContent />
+      </section>
+    </main>
   );
 }

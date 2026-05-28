@@ -12,6 +12,7 @@ import {
   Settings,
   ShieldCheck,
   Sparkles,
+  Target,
   LogOut,
   Users,
 } from 'lucide-react';
@@ -22,6 +23,7 @@ import { api, Approval, Chat, ChatMessage, ChatMode, Connector, Project, User } 
 type RevenueChatProps = {
   currentUser: User;
   onLogout: () => void;
+  onOpenArchitect: () => void;
   onOpenIntelligence: () => void;
   onOpenProjects: () => void;
   onOpenUsers: () => void;
@@ -49,17 +51,31 @@ const fallbackConnectors: Connector[] = [
     detail: 'Read + draft actions',
     mode: 'read_write_with_approval',
   },
+  {
+    id: 'meta_ads_mcp',
+    label: 'Meta Ads MCP',
+    status: 'Ready to configure',
+    detail: 'Optional vetted MCP server for Meta account insights, audience estimates, and draft actions',
+    mode: 'configured_per_project',
+  },
   { id: 'website', label: 'Website', status: 'connected', detail: 'Landing page context', mode: 'read_only' },
   {
     id: 'mcp_api',
     label: 'MCP/API',
     status: 'project_scoped',
-    detail: 'Google Ads MCP, Meta API, custom tools',
+    detail: 'Google Ads MCP, Meta Marketing API, custom tools',
     mode: 'configured_per_project',
   },
 ];
 
-export function RevenueChat({ currentUser, onLogout, onOpenIntelligence, onOpenProjects, onOpenUsers }: RevenueChatProps) {
+export function RevenueChat({
+  currentUser,
+  onLogout,
+  onOpenArchitect,
+  onOpenIntelligence,
+  onOpenProjects,
+  onOpenUsers,
+}: RevenueChatProps) {
   const [mode, setMode] = useState<ChatMode>('Ask');
   const [draft, setDraft] = useState(chatPrompts[0].prompt);
   const [showSetup, setShowSetup] = useState(false);
@@ -80,6 +96,7 @@ export function RevenueChat({ currentUser, onLogout, onOpenIntelligence, onOpenP
     () => ({
       google_ads: DatabaseZap,
       meta_ads: DatabaseZap,
+      meta_ads_mcp: Settings,
       website: Globe,
       mcp_api: Settings,
     }),
@@ -209,6 +226,11 @@ export function RevenueChat({ currentUser, onLogout, onOpenIntelligence, onOpenP
         <button className="sidebar-nav-button" onClick={onOpenIntelligence} type="button">
           <DatabaseZap size={17} />
           Campaign intelligence
+        </button>
+
+        <button className="sidebar-nav-button" onClick={onOpenArchitect} type="button">
+          <Target size={17} />
+          Campaign Architect
         </button>
 
         <button className="sidebar-nav-button" onClick={onOpenProjects} type="button">

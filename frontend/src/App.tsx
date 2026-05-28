@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { CampaignArchitect } from './components/CampaignArchitect';
 import { CampaignIntelligenceModule } from './components/CampaignIntelligenceModule';
 import { LoginScreen } from './components/LoginScreen';
 import { ProjectConnectorModule } from './components/ProjectConnectorModule';
@@ -33,7 +34,7 @@ function App() {
   const [projects, setProjects] = useState<Project[]>(fallbackProjects);
   const [selectedProjectId, setSelectedProjectId] = useState(fallbackProjects[0].id);
   const [intelligence, setIntelligence] = useState<CampaignIntelligence>(getFallbackIntelligence(fallbackProjects[0].id));
-  const [activeModule, setActiveModule] = useState<'chat' | 'intelligence' | 'projects' | 'users'>('chat');
+  const [activeModule, setActiveModule] = useState<'chat' | 'architect' | 'intelligence' | 'projects' | 'users'>('chat');
   const [loginError, setLoginError] = useState<string>();
   const sessionToken = session?.token;
   const selectedProject = projects.find((project) => project.id === selectedProjectId) || projects[0];
@@ -143,6 +144,16 @@ function App() {
     );
   }
 
+  if (activeModule === 'architect') {
+    return (
+      <CampaignArchitect
+        currentUser={session.user}
+        onBack={() => setActiveModule('chat')}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
   if (activeModule === 'projects') {
     return (
       <ProjectConnectorModule
@@ -160,6 +171,7 @@ function App() {
     <RevenueChat
       currentUser={session.user}
       onLogout={handleLogout}
+      onOpenArchitect={() => setActiveModule('architect')}
       onOpenIntelligence={() => setActiveModule('intelligence')}
       onOpenProjects={() => setActiveModule('projects')}
       onOpenUsers={() => setActiveModule('users')}

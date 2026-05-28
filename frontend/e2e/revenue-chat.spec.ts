@@ -65,6 +65,8 @@ test('opens project and connector management module', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Crystal Hues PPC connectors' })).toBeVisible();
   await expect(page.getByRole('article').filter({ hasText: 'Google Ads' }).getByText('Read + draft actions')).toBeVisible();
   await expect(page.getByRole('article').filter({ hasText: 'Google Ads' }).getByText('read write with approval')).toBeVisible();
+  await expect(page.getByRole('article').filter({ hasText: 'Meta Ads MCP' }).getByText('Ready to configure')).toBeVisible();
+  await expect(page.getByRole('article').filter({ hasText: 'Meta Ads MCP' }).getByText('configured per project')).toBeVisible();
 
   await page.getByRole('button', { name: 'Lead Gen Test Needs connectors' }).click();
   await expect(page.getByRole('heading', { name: 'Lead Gen Test connectors' })).toBeVisible();
@@ -72,6 +74,18 @@ test('opens project and connector management module', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Back to AI chat' }).click();
   await expect(page.getByRole('heading', { name: 'How can I help with your campaigns?' })).toBeVisible();
+});
+
+test('opens campaign architect for planning and campaign book export', async ({ page }) => {
+  await login(page);
+
+  await page.getByRole('button', { name: 'Campaign Architect' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Strategy an expert can trust. Execution a junior operator can follow.' })).toBeVisible();
+  await expect(page.getByText('Questions before planning')).toBeVisible();
+  await expect(page.getByText('Build-ready structure with expert logic')).toBeVisible();
+  await expect(page.getByText('Campaign book sections')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Export campaign book' })).toBeVisible();
 });
 
 test('opens campaign intelligence dashboard with project scoped metrics', async ({ page }) => {
