@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { LockKeyhole, Sparkles } from 'lucide-react';
+import { BarChart3, FileText, LockKeyhole, Search, ShieldCheck, Sparkles, Target } from 'lucide-react';
 import { WORKSPACE_EMAIL, WORKSPACE_PASSWORD } from '../data/workspaceAuth';
 
 type LoginScreenProps = {
@@ -24,21 +24,84 @@ export function LoginScreen({ error, onLogin }: LoginScreenProps) {
   }
 
   return (
-    <main className="login-shell">
-      <section className="login-panel" aria-label="Workspace login">
-        <div className="login-brand">
+    <main className="login-shell homepage-shell">
+      <section className="homepage-hero" aria-label="Product introduction">
+        <div className="login-brand homepage-brand">
           <div className="brand-mark-small">
             <Sparkles size={18} />
           </div>
           <div>
             <p>Campaign AI workspace</p>
-            <h1>AdOps Intelligence</h1>
+            <h1>AI PPC Operator</h1>
+          </div>
+        </div>
+
+        <div className="homepage-copy">
+          <p className="eyebrow">Restraint-first campaign operations</p>
+          <h2>AI PPC Operator for serious campaign planning</h2>
+          <p>
+            AI asks before it plans. Every recommendation carries logic, source, confidence, and risk. Execution stays
+            behind approval, and every campaign book remains versioned and auditable.
+          </p>
+        </div>
+
+        <ul className="homepage-proof-points" aria-label="Product proof points">
+          <li>
+            <Search size={16} />
+            <span>Google Ads and Meta Ads</span>
+          </li>
+          <li>
+            <BarChart3 size={16} />
+            <span>Ask, Act, Architect</span>
+          </li>
+          <li>
+            <FileText size={16} />
+            <span>Versioned campaign books</span>
+          </li>
+          <li>
+            <ShieldCheck size={16} />
+            <span>Approval-safe execution</span>
+          </li>
+        </ul>
+
+        <section className="homepage-preview" aria-label="Workspace preview">
+          <article>
+            <Target size={16} />
+            <strong>Ask</strong>
+            <span>Read connected account data and explain the problem.</span>
+          </article>
+          <article>
+            <BarChart3 size={16} />
+            <strong>Intelligence</strong>
+            <span>Show metrics, citations, and source confidence.</span>
+          </article>
+          <article>
+            <FileText size={16} />
+            <strong>Architect</strong>
+            <span>Turn strategy into a build-ready campaign book.</span>
+          </article>
+          <article>
+            <ShieldCheck size={16} />
+            <strong>Act</strong>
+            <span>Draft changes and wait for approval before execution.</span>
+          </article>
+        </section>
+      </section>
+
+      <section className="login-panel homepage-login" aria-label="Workspace login">
+        <div className="login-brand">
+          <div className="brand-mark-small">
+            <Sparkles size={18} />
+          </div>
+          <div>
+            <p>Workspace access</p>
+            <h1>Sign in</h1>
           </div>
         </div>
 
         <div className="login-copy">
-          <h2>Sign in to your PPC workspace</h2>
-          <p>Use the workspace account to review auth, users, projects, and the AI campaign chat.</p>
+          <h2>Open the workspace</h2>
+          <p>Use the workspace account to review projects, AI reasoning, approvals, and campaign books.</p>
         </div>
 
         <form className="login-form" onSubmit={submitLogin}>

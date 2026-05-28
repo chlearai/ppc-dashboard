@@ -10,7 +10,8 @@ async function login(page: Page) {
 test('shows the workspace login screen before the workspace', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page.getByRole('heading', { name: 'AdOps Intelligence' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'AI PPC Operator for serious campaign planning' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible();
   await expect(page.getByLabel('Work email')).toBeVisible();
   await expect(page.getByLabel('Password')).toBeVisible();
   await expect(page.getByText('admin@adops.test')).toBeVisible();
