@@ -67,6 +67,8 @@ test('opens project and connector management module', async ({ page }) => {
   await expect(page.getByRole('article').filter({ hasText: 'Google Ads' }).getByText('read write with approval')).toBeVisible();
   await expect(page.getByRole('article').filter({ hasText: 'Meta Ads MCP' }).getByText('Ready to configure')).toBeVisible();
   await expect(page.getByRole('article').filter({ hasText: 'Meta Ads MCP' }).getByText('configured per project')).toBeVisible();
+  await expect(page.getByRole('article').filter({ hasText: 'AI Agent Brain' }).getByText('Demo fallback active')).toBeVisible();
+  await expect(page.getByRole('article').filter({ hasText: 'AI Agent Brain' }).getByText('Codex, Claude, or another AI agent orchestrates MCP data, Ask mode, Act mode, and approval-safe execution')).toBeVisible();
 
   await page.getByRole('button', { name: 'Lead Gen Test Needs connectors' }).click();
   await expect(page.getByRole('heading', { name: 'Lead Gen Test connectors' })).toBeVisible();

@@ -45,6 +45,13 @@ const fallbackConnectors: Connector[] = [
     mode: 'read_write_with_approval',
   },
   {
+    id: 'ai_agent_brain',
+    label: 'AI Agent Brain',
+    status: 'Demo fallback active',
+    detail: 'Codex, Claude, or another AI agent orchestrates MCP data, Ask mode, Act mode, and approval-safe execution',
+    mode: 'provider_config_required',
+  },
+  {
     id: 'meta_ads',
     label: 'Meta Ads',
     status: 'connected',
@@ -95,6 +102,7 @@ export function RevenueChat({
   const connectorIconMap = useMemo(
     () => ({
       google_ads: DatabaseZap,
+      ai_agent_brain: Sparkles,
       meta_ads: DatabaseZap,
       meta_ads_mcp: Settings,
       website: Globe,

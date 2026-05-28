@@ -18,6 +18,15 @@ export type Connector = {
   mode: string;
 };
 
+export type AiAgentBrainStatus = {
+  id: string;
+  label: string;
+  status: string;
+  providerMode: string;
+  providerOptions: string[];
+  responsibilities: string[];
+};
+
 export type Chat = {
   id: string;
   projectId: string;
@@ -147,6 +156,7 @@ export const api = {
       },
     }),
   getProjects: () => request<{ projects: Project[] }>('/api/projects'),
+  getAiAgentBrainStatus: () => request<{ brain: AiAgentBrainStatus }>('/api/ai-agent-brain'),
   getCampaignIntelligence: (projectId: string) =>
     request<{ intelligence: CampaignIntelligence }>(`/api/campaign-intelligence?projectId=${projectId}`),
   getChats: (projectId: string) => request<{ chats: Chat[] }>(`/api/chats?projectId=${projectId}`),

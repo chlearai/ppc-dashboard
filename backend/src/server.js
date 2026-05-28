@@ -55,6 +55,13 @@ const projects = [
         mode: 'read_write_with_approval',
       },
       {
+        id: 'ai_agent_brain',
+        label: 'AI Agent Brain',
+        status: 'Demo fallback active',
+        detail: 'Codex, Claude, or another AI agent orchestrates MCP data, Ask mode, Act mode, and approval-safe execution',
+        mode: 'provider_config_required',
+      },
+      {
         id: 'meta_ads',
         label: 'Meta Ads',
         status: 'connected',
@@ -188,6 +195,22 @@ const approvals = [
   },
 ];
 
+const aiAgentBrain = {
+  id: 'ai_agent_brain',
+  label: 'AI Agent Brain',
+  status: 'Demo fallback active',
+  providerMode: 'provider_config_required',
+  providerOptions: ['Codex', 'Claude', 'OpenAI', 'Gemini', 'Custom agent endpoint'],
+  responsibilities: [
+    'MCP and connector data orchestration',
+    'Ask mode campaign diagnosis',
+    'Act mode action drafting',
+    'Campaign Architect planning',
+    'Campaign Intelligence explanations',
+    'Approval queue reasoning and risk summaries',
+  ],
+};
+
 const campaignIntelligence = {
   project_crystal_hues: {
     projectId: 'project_crystal_hues',
@@ -319,6 +342,14 @@ const server = http.createServer(async (request, response) => {
 
   if (request.method === 'GET' && requestUrl.pathname === '/api/projects') {
     jsonResponse(response, 200, { projects });
+    return;
+  }
+
+  if (
+    request.method === 'GET' &&
+    (requestUrl.pathname === '/api/ai-agent-brain' || requestUrl.pathname === '/api/llm-brain')
+  ) {
+    jsonResponse(response, 200, { brain: aiAgentBrain });
     return;
   }
 

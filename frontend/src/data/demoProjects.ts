@@ -17,6 +17,13 @@ export const fallbackProjects: Project[] = [
         mode: 'read_write_with_approval',
       },
       {
+        id: 'ai_agent_brain',
+        label: 'AI Agent Brain',
+        status: 'Demo fallback active',
+        detail: 'Codex, Claude, or another AI agent orchestrates MCP data, Ask mode, Act mode, and approval-safe execution',
+        mode: 'provider_config_required',
+      },
+      {
         id: 'meta_ads',
         label: 'Meta Ads',
         status: 'connected',
@@ -54,6 +61,13 @@ export const fallbackProjects: Project[] = [
         status: 'connected',
         detail: 'Read + draft actions',
         mode: 'read_write_with_approval',
+      },
+      {
+        id: 'ai_agent_brain',
+        label: 'AI Agent Brain',
+        status: 'Demo fallback active',
+        detail: 'Codex, Claude, or another AI agent orchestrates MCP data, Ask mode, Act mode, and approval-safe execution',
+        mode: 'provider_config_required',
       },
       {
         id: 'meta_ads_mcp',

@@ -111,12 +111,15 @@ The app should behave like a chat workspace. Each project owns its own context a
 
 Project-level settings:
 
+- AI Agent Brain provider configuration for the intelligence layer that powers Ask mode, Act mode, Campaign Architect, Campaign Intelligence, and approval reasoning.
 - Google Ads connector or Google Ads MCP server.
 - Meta Ads connector or Meta Marketing API credentials.
 - Website URL and landing page crawl settings.
 - Optional MCP tools or custom APIs.
 - Brand, offer, product, and campaign history context.
 - Approval rules for Act mode.
+
+The AI Agent Brain should be treated as the orchestration layer, not a campaign-data connector. It can use Codex, Claude, OpenAI, Gemini, or a custom agent endpoint later, but the UI should clearly show whether it is in configured mode or demo fallback mode. It should combine agent reasoning with MCP and connector data before answering in Ask mode or drafting approval-safe changes in Act mode.
 
 The chat UI should expose connected tools near the project selector, with a small project setup panel for configuring connectors. This keeps the main interaction simple while making it clear which data the assistant can access.
 
