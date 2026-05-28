@@ -183,6 +183,8 @@ function App() {
     return (
       <CampaignArchitect
         currentUser={session.user}
+        projectId={selectedProjectId}
+        projectName={selectedProject.name}
         onBack={() => setActiveModule('chat')}
         onLogout={handleLogout}
       />

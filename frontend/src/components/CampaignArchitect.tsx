@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Target } from 'lucide-react';
 import {
   architectureRows,
@@ -9,16 +9,20 @@ import {
   planSections,
   strategyRationale,
 } from '../data/strategy';
-import { User } from '../lib/api';
+import { api, AuditLog, CampaignBookVersion, User } from '../lib/api';
 
 type CampaignArchitectProps = {
   currentUser?: User;
+  projectId?: string;
+  projectName?: string;
   onBack?: () => void;
   onLogout?: () => void;
 };
 
-function CampaignArchitectContent() {
+function CampaignArchitectContent({ projectId, projectName }: { projectId: string; projectName: string }) {
   const [selectedQuestion, setSelectedQuestion] = useState(0);
+  const [campaignBooks, setCampaignBooks] = useState<CampaignBookVersion[]>([]);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
 
   const activeQuestion = intakeQuestions[selectedQuestion];
 
@@ -32,6 +36,34 @@ function CampaignArchitectContent() {
     [],
   );
 
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadRecords() {
+      try {
+        const [bookResponse, auditResponse] = await Promise.all([
+          api.getCampaignBooks(projectId),
+          api.getAuditLogs(projectId),
+        ]);
+
+        if (ignore) return;
+
+        setCampaignBooks(bookResponse.campaignBooks);
+        setAuditLogs(auditResponse.auditLogs);
+      } catch {
+        if (ignore) return;
+        setCampaignBooks([]);
+        setAuditLogs([]);
+      }
+    }
+
+    loadRecords();
+
+    return () => {
+      ignore = true;
+    };
+  }, [projectId]);
+
   function exportCampaignBook() {
     window.print();
   }
@@ -41,7 +73,7 @@ function CampaignArchitectContent() {
       <div className="planner-main">
         <div className="module-hero">
           <div>
-            <p>Campaign Architect</p>
+            <p>{projectName}</p>
             <h2>Strategy an expert can trust. Execution a junior operator can follow.</h2>
             <span>
               The AI builds a data-backed Google and Meta media plan, explains the logic, labels confidence, and turns
@@ -61,6 +93,75 @@ function CampaignArchitectContent() {
             <span>Strong enough for launch review after 3 data gaps are resolved.</span>
           </div>
         </div>
+
+        <section className="record-traceability">
+          <div className="record-card">
+            <div className="section-heading">
+              <div>
+                <p>Saved records</p>
+                <h2>Saved campaign books</h2>
+              </div>
+              <span className="progress-pill">{campaignBooks.length} versions</span>
+            </div>
+
+            {campaignBooks.length > 0 ? (
+              <div className="record-list">
+                {campaignBooks.map((book) => (
+                  <article className="record-item" key={book.id}>
+                    <div className="record-item-head">
+                      <strong>Version {book.version}</strong>
+                      <span>{book.status}</span>
+                    </div>
+                    <h3>{book.title}</h3>
+                    <p>{book.summary}</p>
+                    <small>
+                      Approved by {book.approvedBy}
+                      {book.approvedByRole ? ` (${book.approvedByRole})` : ''}
+                    </small>
+                    <small>{book.source}</small>
+                    <ul>
+                      {book.approvedActions.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="empty-records">No saved campaign books yet.</p>
+            )}
+          </div>
+
+          <div className="record-card">
+            <div className="section-heading">
+              <div>
+                <p>Traceability</p>
+                <h2>Audit trail</h2>
+              </div>
+            </div>
+
+            {auditLogs.length > 0 ? (
+              <div className="audit-list">
+                {auditLogs.slice(0, 6).map((log) => (
+                  <article className="audit-item" key={log.id}>
+                    <div className="record-item-head">
+                      <strong>{log.title}</strong>
+                      <span>{log.eventType}</span>
+                    </div>
+                    <p>{log.detail}</p>
+                    <small>
+                      {log.actor}
+                      {log.provider ? ` · ${log.provider}` : ''}
+                    </small>
+                    <small>{log.createdAt.replace('T', ' ').replace('Z', '')}</small>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="empty-records">No audit events yet.</p>
+            )}
+          </div>
+        </section>
 
         <section className="intelligence-grid" aria-label="Strategy intelligence summary">
           {intelligenceMetrics.map((metric) => (
@@ -227,9 +328,12 @@ function CampaignArchitectContent() {
   );
 }
 
-export function CampaignArchitect({ currentUser, onBack, onLogout }: CampaignArchitectProps) {
+export function CampaignArchitect({ currentUser, projectId, projectName, onBack, onLogout }: CampaignArchitectProps) {
+  const activeProjectId = projectId || 'project_crystal_hues';
+  const activeProjectName = projectName || 'Campaign Architect';
+
   if (!currentUser || !onBack || !onLogout) {
-    return <CampaignArchitectContent />;
+    return <CampaignArchitectContent projectId={activeProjectId} projectName={activeProjectName} />;
   }
 
   return (
@@ -262,7 +366,7 @@ export function CampaignArchitect({ currentUser, onBack, onLogout }: CampaignArc
       </aside>
 
       <section className="intelligence-main">
-        <CampaignArchitectContent />
+        <CampaignArchitectContent projectId={activeProjectId} projectName={activeProjectName} />
       </section>
     </main>
   );

@@ -59,6 +59,33 @@ export type Approval = {
   expectedImpact: string;
 };
 
+export type AuditLog = {
+  id: string;
+  projectId: string;
+  eventType: string;
+  title: string;
+  detail: string;
+  actor: string;
+  provider: string | null;
+  relatedCampaignBookId: string | null;
+  createdAt: string;
+};
+
+export type CampaignBookVersion = {
+  id: string;
+  projectId: string;
+  version: number;
+  title: string;
+  summary: string;
+  approvedBy: string;
+  approvedByRole: string;
+  approvedActions: string[];
+  source: string;
+  agentProvider: string | null;
+  status: string;
+  createdAt: string;
+};
+
 export type User = {
   id: string;
   name: string;
@@ -172,6 +199,23 @@ export const api = {
   getMessages: () => request<{ messages: ChatMessage[] }>('/api/messages'),
   getApprovals: (projectId: string) =>
     request<{ approvals: Approval[] }>(`/api/approvals?projectId=${projectId}`),
+  getAuditLogs: (projectId: string) => request<{ auditLogs: AuditLog[] }>(`/api/audit-logs?projectId=${projectId}`),
+  getCampaignBooks: (projectId: string) =>
+    request<{ campaignBooks: CampaignBookVersion[] }>(`/api/campaign-books?projectId=${projectId}`),
+  saveCampaignBook: (payload: {
+    projectId: string;
+    title: string;
+    summary: string;
+    approvedBy: string;
+    approvedByRole: string;
+    approvedActions: string[];
+    source: string;
+    agentProvider?: string | null;
+  }) =>
+    request<{ campaignBook: CampaignBookVersion; auditLog: AuditLog }>('/api/campaign-books', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
   sendMessage: (message: string, mode: ChatMode, projectId: string) =>
     request<{
       mode: ChatMode;

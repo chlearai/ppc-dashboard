@@ -67,8 +67,8 @@ test('opens project and connector management module', async ({ page }) => {
   await expect(page.getByRole('article').filter({ hasText: 'Google Ads' }).getByText('read write with approval')).toBeVisible();
   await expect(page.getByRole('article').filter({ hasText: 'Meta Ads MCP' }).getByText('Ready to configure')).toBeVisible();
   await expect(page.getByRole('article').filter({ hasText: 'Meta Ads MCP' }).getByText('configured per project')).toBeVisible();
-  await expect(page.getByRole('article').filter({ hasText: 'AI Agent Brain' }).getByText('Demo fallback active')).toBeVisible();
   await expect(page.getByRole('article').filter({ hasText: 'AI Agent Brain' }).getByText('Codex, Claude, or another AI agent orchestrates MCP data, Ask mode, Act mode, and approval-safe execution')).toBeVisible();
+  await expect(page.getByRole('article').filter({ hasText: 'AI Agent Brain' }).getByRole('button', { name: 'Claude' })).toBeVisible();
   await page.getByRole('button', { name: 'Claude' }).click();
   await expect(page.getByRole('article').filter({ hasText: 'AI Agent Brain' }).getByText('Configured with Claude')).toBeVisible();
 
@@ -92,6 +92,29 @@ test('opens campaign architect for planning and campaign book export', async ({ 
   await expect(page.getByText('Build-ready structure with expert logic')).toBeVisible();
   await expect(page.getByText('Campaign book sections')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Export campaign book' })).toBeVisible();
+});
+
+test('saves a campaign book version from Act mode and shows it in the architect audit trail', async ({ page }) => {
+  await login(page);
+
+  await page.getByRole('button', { name: 'Act', exact: true }).click();
+  const saveResponsePromise = page.waitForResponse(
+    (response) => response.url().includes('/api/campaign-books') && response.request().method() === 'POST',
+  );
+  await page.getByRole('button', { name: 'Approve and save campaign book' }).click();
+  const saveResponse = await saveResponsePromise;
+  const { campaignBook } = (await saveResponse.json()) as { campaignBook: { version: number } };
+
+  await expect(page.getByText('Campaign book saved')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Campaign Architect' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Saved campaign books' })).toBeVisible();
+  const savedBook = page.getByRole('article').filter({ hasText: `Version ${campaignBook.version}` });
+  await expect(savedBook.getByText(`Version ${campaignBook.version}`, { exact: true })).toBeVisible();
+  await expect(savedBook.getByText('Approved from Act mode')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Audit trail' })).toBeVisible();
+  await expect(page.getByText('Campaign book saved', { exact: true }).first()).toBeVisible();
 });
 
 test('opens campaign intelligence dashboard with project scoped metrics', async ({ page }) => {

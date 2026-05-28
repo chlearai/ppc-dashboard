@@ -205,6 +205,8 @@ const aiAgentBrainResponsibilities = [
   'Approval queue reasoning and risk summaries',
 ];
 
+const auditLogsByProject = Object.fromEntries(projects.map((project) => [project.id, []]));
+const campaignBooksByProject = Object.fromEntries(projects.map((project) => [project.id, []]));
 const aiAgentBrainStateByProject = Object.fromEntries(
   projects.map((project) => [
     project.id,
@@ -219,6 +221,58 @@ const aiAgentBrainStateByProject = Object.fromEntries(
     },
   ]),
 );
+
+function nowIso() {
+  return new Date().toISOString();
+}
+
+function getAuditLogs(projectId) {
+  return auditLogsByProject[projectId] || auditLogsByProject[projects[0].id];
+}
+
+function recordAuditLog(entry) {
+  const projectId = entry.projectId || projects[0].id;
+  const auditLog = {
+    id: `audit_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    projectId,
+    eventType: entry.eventType,
+    title: entry.title,
+    detail: entry.detail,
+    actor: entry.actor,
+    provider: entry.provider || null,
+    relatedCampaignBookId: entry.relatedCampaignBookId || null,
+    createdAt: nowIso(),
+  };
+
+  getAuditLogs(projectId).unshift(auditLog);
+  return auditLog;
+}
+
+function getCampaignBooks(projectId) {
+  return campaignBooksByProject[projectId] || campaignBooksByProject[projects[0].id];
+}
+
+function createCampaignBook(entry) {
+  const projectId = entry.projectId || projects[0].id;
+  const books = getCampaignBooks(projectId);
+  const campaignBook = {
+    id: `campaign_book_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    projectId,
+    version: books.length + 1,
+    title: entry.title,
+    summary: entry.summary,
+    approvedBy: entry.approvedBy,
+    approvedByRole: entry.approvedByRole,
+    approvedActions: entry.approvedActions,
+    source: entry.source,
+    agentProvider: entry.agentProvider || null,
+    status: 'approved',
+    createdAt: nowIso(),
+  };
+
+  books.unshift(campaignBook);
+  return campaignBook;
+}
 
 function getAiAgentBrain(projectId) {
   const brain = aiAgentBrainStateByProject[projectId] || aiAgentBrainStateByProject[projects[0].id];
@@ -238,7 +292,20 @@ function updateAiAgentBrain(projectId, selectedProvider) {
     return null;
   }
 
+  const previousProvider = brain.selectedProvider;
   brain.selectedProvider = provider;
+
+  if (previousProvider !== provider) {
+    recordAuditLog({
+      projectId,
+      eventType: 'brain_provider_updated',
+      title: 'AI Agent Brain provider updated',
+      detail: provider ? `Configured with ${provider}` : 'Reset to demo fallback',
+      actor: 'Workspace admin',
+      provider: provider || 'Demo fallback active',
+    });
+  }
+
   return getAiAgentBrain(projectId);
 }
 
@@ -305,7 +372,7 @@ const campaignIntelligence = {
 
 function jsonResponse(response, statusCode, payload) {
   response.writeHead(statusCode, {
-    'Access-Control-Allow-Origin': process.env.CORS_ORIGIN || 'http://127.0.0.1:5173',
+    'Access-Control-Allow-Origin': process.env.CORS_ORIGIN || '*',
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
     'Access-Control-Allow-Headers': 'Authorization,Content-Type',
     'Content-Type': 'application/json',
@@ -477,6 +544,54 @@ const server = http.createServer(async (request, response) => {
     return;
   }
 
+  if (request.method === 'GET' && requestUrl.pathname === '/api/audit-logs') {
+    const project = getProject(requestUrl);
+    jsonResponse(response, 200, { auditLogs: getAuditLogs(project.id) });
+    return;
+  }
+
+  if (request.method === 'GET' && requestUrl.pathname === '/api/campaign-books') {
+    const project = getProject(requestUrl);
+    jsonResponse(response, 200, { campaignBooks: getCampaignBooks(project.id) });
+    return;
+  }
+
+  if (request.method === 'POST' && requestUrl.pathname === '/api/campaign-books') {
+    const body = await parseBody(request);
+    const projectId = typeof body.projectId === 'string' ? body.projectId : projects[0].id;
+    const approvedActions = Array.isArray(body.approvedActions) ? body.approvedActions.filter((item) => typeof item === 'string') : [];
+    const title = typeof body.title === 'string' && body.title.trim() ? body.title.trim() : 'Campaign book';
+    const summary = typeof body.summary === 'string' && body.summary.trim() ? body.summary.trim() : 'Approved from Act mode';
+    const approvedBy = typeof body.approvedBy === 'string' && body.approvedBy.trim() ? body.approvedBy.trim() : 'Workspace admin';
+    const approvedByRole = typeof body.approvedByRole === 'string' && body.approvedByRole.trim() ? body.approvedByRole.trim() : 'Workspace Admin';
+    const source = typeof body.source === 'string' && body.source.trim() ? body.source.trim() : 'Act mode';
+    const agentProvider = typeof body.agentProvider === 'string' && body.agentProvider.trim() ? body.agentProvider.trim() : null;
+
+    const campaignBook = createCampaignBook({
+      projectId,
+      title,
+      summary,
+      approvedBy,
+      approvedByRole,
+      approvedActions,
+      source,
+      agentProvider,
+    });
+
+    const auditLog = recordAuditLog({
+      projectId,
+      eventType: 'campaign_book_saved',
+      title: 'Campaign book saved',
+      detail: `${approvedBy} approved and saved the campaign book from ${source}`,
+      actor: approvedBy,
+      provider: agentProvider || 'Demo fallback active',
+      relatedCampaignBookId: campaignBook.id,
+    });
+
+    jsonResponse(response, 200, { campaignBook, auditLog });
+    return;
+  }
+
   if (request.method === 'POST' && requestUrl.pathname === '/api/chat') {
     const body = await parseBody(request);
     const mode = body.mode === 'Act' ? 'Act' : 'Ask';
@@ -485,6 +600,15 @@ const server = http.createServer(async (request, response) => {
     const agentProvider = brain.selectedProvider || 'Demo fallback active';
 
     if (mode === 'Act') {
+      recordAuditLog({
+        projectId,
+        eventType: 'act_plan_drafted',
+        title: 'Act mode plan drafted',
+        detail: `Prepared ${approvals.length} approval-safe changes`,
+        actor: 'AI Agent Brain',
+        provider: agentProvider,
+      });
+
       jsonResponse(response, 200, {
         mode,
         agentProvider,
@@ -501,6 +625,15 @@ const server = http.createServer(async (request, response) => {
       content:
         'I checked connected Google Ads and Meta Ads data. The largest issue is wasted spend from low-intent search terms, followed by Meta prospecting creative fatigue.',
       table: messages[1].table,
+    });
+
+    recordAuditLog({
+      projectId,
+      eventType: 'ask_insight_generated',
+      title: 'Ask mode answer generated',
+      detail: 'AI Agent Brain summarized connected account data',
+      actor: 'AI Agent Brain',
+      provider: agentProvider,
     });
     return;
   }

@@ -646,6 +646,78 @@ td:first-child {
   grid-column: 1 / -1;
 }
 
+.record-traceability {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-column: 1 / -1;
+}
+
+.record-card {
+  background: #fbfcfd;
+  border: 1px solid #dce3eb;
+  border-radius: 8px;
+  box-shadow: 0 18px 42px rgba(26, 37, 56, 0.06);
+  min-width: 0;
+  padding: 18px;
+}
+
+.record-list,
+.audit-list {
+  display: grid;
+  gap: 12px;
+}
+
+.record-item,
+.audit-item {
+  background: #f6f8fa;
+  border: 1px solid #dce3eb;
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.record-item-head {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.record-item-head span {
+  color: #627085;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.record-item h3 {
+  margin-top: 8px;
+}
+
+.record-item p,
+.audit-item p {
+  color: #405067;
+  margin: 8px 0 0;
+}
+
+.record-item small,
+.audit-item small {
+  color: #627085;
+  display: block;
+  margin-top: 8px;
+}
+
+.record-item ul {
+  color: #405067;
+  margin: 12px 0 0;
+  padding-left: 18px;
+}
+
+.empty-records {
+  color: #627085;
+  margin: 0;
+}
+
 .book-grid {
   display: grid;
   gap: 14px;
@@ -1126,7 +1198,8 @@ td:first-child {
   .kpi-strip,
   .capability-stack,
   .intelligence-grid,
-  .question-board {
+  .question-board,
+  .record-traceability {
     grid-template-columns: 1fr;
   }
 
@@ -2395,6 +2468,16 @@ td:first-child {
   color: #405067;
   margin: 12px 0;
   padding-left: 18px;
+}
+
+.approval-card .secondary {
+  margin-top: 10px;
+}
+
+.campaign-book-notice {
+  color: #0b746d;
+  font-weight: 700;
+  margin: 10px 0 0;
 }
 
 .composer-area {

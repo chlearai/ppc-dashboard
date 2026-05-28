@@ -94,6 +94,7 @@ export function RevenueChat({
   const [connectors, setConnectors] = useState<Connector[]>(fallbackConnectors);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [approvals, setApprovals] = useState<Approval[]>([]);
+  const [campaignBookNotice, setCampaignBookNotice] = useState<string>();
   const [apiStatus, setApiStatus] = useState<'live' | 'fallback'>('fallback');
 
   const selectedProject = projects.find((project) => project.id === selectedProjectId) || projects[0];
@@ -159,12 +160,13 @@ export function RevenueChat({
 
   async function selectProject(projectId: string) {
     setSelectedProjectId(projectId);
+    setCampaignBookNotice(undefined);
 
     try {
-        const [chatResponse, connectorResponse, approvalResponse] = await Promise.all([
-          api.getChats(projectId),
-          api.getConnectors(projectId),
-          api.getApprovals(projectId),
+      const [chatResponse, connectorResponse, approvalResponse] = await Promise.all([
+        api.getChats(projectId),
+        api.getConnectors(projectId),
+        api.getApprovals(projectId),
       ]);
       setChats(chatResponse.chats);
       setConnectors(connectorResponse.connectors);
@@ -173,6 +175,35 @@ export function RevenueChat({
     } catch {
       setChats(fallbackChats);
       setConnectors(fallbackConnectors);
+      setApiStatus('fallback');
+    }
+  }
+
+  async function approveAndSaveCampaignBook() {
+    const approvedActions =
+      approvals.length > 0
+        ? approvals.map((approval) => approval.title)
+        : [
+            'Add 14 negative keywords to Google Search.',
+            'Reduce fatigued Meta ad set budget by 12%.',
+            'Create a new creative test with proof, comparison, and objection hooks.',
+          ];
+
+    try {
+      await api.saveCampaignBook({
+        projectId: selectedProjectId,
+        title: `${selectedProject.name} campaign book`,
+        summary: 'Approved from Act mode',
+        approvedBy: currentUser.name,
+        approvedByRole: currentUser.role,
+        approvedActions,
+        source: 'Act mode',
+        agentProvider: aiAgentBrain.selectedProvider,
+      });
+      setCampaignBookNotice('Campaign book saved');
+      setApiStatus('live');
+    } catch {
+      setCampaignBookNotice('Campaign book save failed');
       setApiStatus('fallback');
     }
   }
@@ -472,6 +503,10 @@ export function RevenueChat({
                       <Check size={16} />
                       Review final approval
                     </button>
+                    <button className="secondary" onClick={approveAndSaveCampaignBook} type="button">
+                      Approve and save campaign book
+                    </button>
+                    {campaignBookNotice && <p className="campaign-book-notice">{campaignBookNotice}</p>}
                   </div>
                 </>
               )}
