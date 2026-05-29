@@ -10,7 +10,8 @@
     "build": "npm --workspace frontend run build && npm --workspace backend run build",
     "lint": "npm --workspace frontend run lint && npm --workspace backend run lint",
     "test:e2e": "npm --workspace frontend run test:e2e",
-    "start:backend": "npm --workspace backend run start"
+    "start:backend": "npm --workspace backend run start",
+    "start:frontend": "npm --workspace frontend run start"
   },
   "workspaces": [
     "frontend",
