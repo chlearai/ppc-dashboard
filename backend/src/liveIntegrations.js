@@ -38,6 +38,129 @@ function compactCampaignName(name) {
   return name.length > 42 ? `${name.slice(0, 39)}...` : name;
 }
 
+function createFallbackChannelSummaries(fallback) {
+  const googlePlatform = fallback.platforms?.find((platform) => platform.platform === 'Google Ads');
+  const metaPlatform = fallback.platforms?.find((platform) => platform.platform === 'Meta Ads');
+  const googleCampaigns = fallback.campaigns?.filter((campaign) => campaign.platform === 'Google Ads') || [];
+  const metaCampaigns = fallback.campaigns?.filter((campaign) => campaign.platform === 'Meta Ads') || [];
+
+  return [
+    {
+      key: 'google_ads',
+      platform: 'Google Ads',
+      title: 'Search demand and intent quality',
+      summary:
+        'Brand search is carrying efficiency. High-intent non-brand needs a separate budget, clearer negatives, and stronger forecast controls.',
+      spend: googlePlatform?.spend || 'n/a',
+      roas: googlePlatform?.roas || 'n/a',
+      cpl: googlePlatform?.cpl || 'n/a',
+      clicks: 'n/a',
+      conversions: 'n/a',
+      campaignCount: googleCampaigns.length,
+      signal: googlePlatform?.signal || 'Use search terms, match types, and conversion quality to isolate waste.',
+      focus: ['Brand vs non-brand separation', 'Search term leakage', 'Forecast-backed scaling'],
+      watchouts: ['High-intent queries are not isolated enough yet', 'Negative keyword coverage should be expanded'],
+      opportunities: googleCampaigns.slice(0, 3).map((campaign) => campaign.name),
+      sourceLabel: 'Google Ads reporting',
+      sourceHref: GOOGLE_ADS_SEARCH_URL,
+    },
+    {
+      key: 'meta_ads',
+      platform: 'Meta Ads',
+      title: 'Creative fatigue and audience pressure',
+      summary:
+        'Prospecting fatigue is the first thing to check. Frequency, CTR decay, and audience overlap determine whether Meta should scale or refresh.',
+      spend: metaPlatform?.spend || 'n/a',
+      roas: metaPlatform?.roas || 'n/a',
+      cpl: metaPlatform?.cpl || 'n/a',
+      clicks: 'n/a',
+      conversions: 'n/a',
+      campaignCount: metaCampaigns.length,
+      signal: metaPlatform?.signal || 'Watch frequency, CTR, and the creative mix before shifting more budget.',
+      focus: ['Creative fatigue', 'Audience overlap', 'Budget pacing'],
+      watchouts: ['Prospecting may saturate if creative rotation stays narrow', 'Retargeting can mask acquisition economics'],
+      opportunities: metaCampaigns.slice(0, 3).map((campaign) => campaign.name),
+      sourceLabel: 'Meta Marketing API insights',
+      sourceHref: META_INSIGHTS_URL,
+    },
+    {
+      key: 'combined',
+      platform: 'Combined',
+      title: 'Budget balance and blended performance',
+      summary:
+        'Use the blended view to decide where the next rupee goes, while keeping Google search efficiency and Meta creative health visible separately.',
+      spend: fallback.metrics?.[0]?.value || 'n/a',
+      roas: fallback.metrics?.find((metric) => metric.label === 'ROAS')?.value || 'n/a',
+      cpl: fallback.metrics?.find((metric) => metric.label === 'CPL')?.value || 'n/a',
+      clicks: fallback.metrics?.find((metric) => metric.label === 'Leads')?.value || 'n/a',
+      conversions: fallback.metrics?.find((metric) => metric.label === 'Conv. rate')?.value || 'n/a',
+      campaignCount: fallback.campaigns?.length || 0,
+      signal: 'Compare channels before shifting spend or changing creative.',
+      focus: ['Budget split', 'Blended ROAS', 'Cross-channel prioritization'],
+      watchouts: ['Blend can hide channel-specific waste', 'One winning channel can mask the other channel’s fatigue'],
+      opportunities: ['Move spend toward the channel with the cleaner evidence trail'],
+      sourceLabel: 'Blended performance model',
+      sourceHref: GOOGLE_ADS_SEARCH_URL,
+    },
+  ];
+}
+
+function createFallbackAnalysisBlocks(fallback) {
+  const googlePlatform = fallback.platforms?.find((platform) => platform.platform === 'Google Ads');
+  const metaPlatform = fallback.platforms?.find((platform) => platform.platform === 'Meta Ads');
+
+  return [
+    {
+      key: 'search-intent',
+      title: 'Search intent mix',
+      channel: 'Google Ads',
+      status: 'watch',
+      summary:
+        'Brand search is efficient, but the account should isolate non-brand demand and negative keywords before scaling.',
+      evidence: [googlePlatform?.signal || 'Google performance should be split by intent class.', 'Campaign-level data is still the current reporting grain.'],
+      action: 'Split brand, competitor, and non-brand search into separate budgets and review terms weekly.',
+      sourceLabel: 'Google Ads reporting',
+      sourceHref: GOOGLE_ADS_SEARCH_URL,
+    },
+    {
+      key: 'creative-fatigue',
+      title: 'Creative fatigue',
+      channel: 'Meta Ads',
+      status: 'risk',
+      summary:
+        'Meta prospecting needs a creative refresh before it is allowed to carry more scale. Frequency and CTR should drive the next refresh cycle.',
+      evidence: [metaPlatform?.signal || 'Meta needs creative rotation and audience testing.', 'Prospecting fatigue is the current account story.'],
+      action: 'Build fresh proof-led variants and keep a rotation schedule tied to frequency and CTR.',
+      sourceLabel: 'Meta Marketing API insights',
+      sourceHref: META_INSIGHTS_URL,
+    },
+    {
+      key: 'budget-balance',
+      title: 'Budget balance',
+      channel: 'Combined',
+      status: 'watch',
+      summary:
+        'The blended view is useful for budget decisions, but channel-specific signals must remain visible to avoid over-optimizing the average.',
+      evidence: ['Budget allocation should not be decided from blended ROAS alone.', 'The dashboard now keeps channel views separate.'],
+      action: 'Use the channel summary cards to decide the next budget move.',
+      sourceLabel: 'Blended performance model',
+      sourceHref: GOOGLE_ADS_SEARCH_URL,
+    },
+    {
+      key: 'conversion-quality',
+      title: 'Conversion quality',
+      channel: 'Combined',
+      status: 'good',
+      summary:
+        'The account already has enough signal to distinguish waste from real performance. The next step is to show the underlying dimensions more clearly.',
+      evidence: [fallback.insight?.detail || 'Account-level diagnosis is present.', 'Evidence and citations are available across the dashboard.'],
+      action: 'Expose more diagnostics for audience, creative, search terms, and landing page fit.',
+      sourceLabel: 'Evidence and planning model',
+      sourceHref: GOOGLE_ADS_KEYWORD_PLANNING_URL,
+    },
+  ];
+}
+
 function buildGoogleAdsConfig() {
   return {
     apiVersion: DEFAULT_GOOGLE_ADS_API_VERSION,
@@ -373,6 +496,8 @@ function buildFallbackSummary(project, fallbackIntelligence, sourceNotes = []) {
     ...fallback,
     projectId: project.id,
     projectName: project.name,
+    channelSummaries: createFallbackChannelSummaries(fallback),
+    analysisBlocks: createFallbackAnalysisBlocks(fallback),
     sources: sourceNotes,
     liveDataMode: false,
     citations: [
@@ -427,8 +552,11 @@ export async function buildCampaignIntelligence(project, fallbackIntelligence) {
   const googleCpa = googleConversions > 0 ? googleSpend / 1_000_000 / googleConversions : 0;
   const metaReach = metaSummary?.metrics?.reach || 0;
   const metaFrequency = metaSummary?.metrics?.frequency || 0;
+  const googleCampaigns = googleSummary?.metrics?.campaigns || [];
+  const metaCampaigns = metaSummary?.metrics?.campaigns || [];
+  const combinedCampaignCount = googleCampaigns.length + metaCampaigns.length;
   const liveCampaigns = [
-    ...(googleSummary?.metrics?.campaigns || []).slice(0, 3).map((campaign) => ({
+    ...googleCampaigns.slice(0, 3).map((campaign) => ({
       id: campaign.id,
       name: campaign.name,
       platform: 'Google Ads',
@@ -444,7 +572,7 @@ export async function buildCampaignIntelligence(project, fallbackIntelligence) {
           ? 'Active in live Google Ads data'
           : 'Check delivery and optimization status',
     })),
-    ...(metaSummary?.metrics?.campaigns || []).slice(0, 3).map((campaign) => ({
+    ...metaCampaigns.slice(0, 3).map((campaign) => ({
       id: `meta_${campaign.id}`,
       name: campaign.name,
       platform: 'Meta Ads',
@@ -454,6 +582,166 @@ export async function buildCampaignIntelligence(project, fallbackIntelligence) {
       roas: metaSpend > 0 ? toRatio(combinedRevenueUnits / metaSpend) : 'n/a',
       issue: `Frequency ${campaign.frequency.toFixed(1)}x on live Meta insights`,
     })),
+  ];
+  const channelSummaries = [
+    {
+      key: 'google_ads',
+      platform: 'Google Ads',
+      title: 'Search demand and intent quality',
+      summary: googleSummary
+        ? `Live Google Ads data is available, with ${googleCampaigns.length} campaigns and ${
+            googleConversions > 0 ? `${googleConversions} conversions` : 'no tracked conversions yet'
+          } in the current window.`
+        : 'Google Ads is not connected, so the view falls back to strategy guidance.',
+      spend: toCurrency(googleSpend),
+      roas:
+        googleSummary && googleSpend > 0 && googleSummary.metrics.conversionValue > 0
+          ? toRatio(googleSummary.metrics.conversionValue / (googleSpend / 1_000_000))
+          : 'n/a',
+      cpl:
+        googleSummary && googleConversions > 0
+          ? toCurrencyUnits(googleSpendUnits / googleConversions)
+          : 'n/a',
+      clicks: String(googleClicks),
+      conversions: String(googleConversions),
+      campaignCount: googleCampaigns.length,
+      signal: googleSummary
+        ? 'Use search terms, negatives, and conversion quality to isolate waste.'
+        : 'Separate brand and non-brand search before scaling budgets.',
+      focus: ['Brand vs non-brand separation', 'Search term leakage', 'Forecast-backed scaling'],
+      watchouts: [
+        googleSummary ? 'Search traffic needs more intent separation before scaling' : 'Google Ads is still in strategy mode',
+        googleConversions > 0 ? 'High CPA pockets should be isolated' : 'Conversion signal is still limited',
+      ],
+      opportunities: googleCampaigns.slice(0, 3).map((campaign) => campaign.name),
+      sourceLabel: 'Google Ads SearchStream',
+      sourceHref: GOOGLE_ADS_SEARCH_URL,
+    },
+    {
+      key: 'meta_ads',
+      platform: 'Meta Ads',
+      title: 'Creative fatigue and audience pressure',
+      summary: metaSummary
+        ? `Live Meta insights show ${metaCampaigns.length} campaigns, ${
+            metaReach > 0 ? `${metaReach.toLocaleString('en-IN')} reach` : 'reach still unavailable'
+          }, and ${metaFrequency > 0 ? `${metaFrequency.toFixed(1)}x frequency` : 'frequency not available'}.`
+        : 'Meta Ads is not connected, so the view falls back to strategy guidance.',
+      spend: toCurrencyUnits(metaSpend),
+      roas:
+        combinedRevenueUnits > 0 && metaSpend > 0
+          ? toRatio(combinedRevenueUnits / metaSpend)
+          : 'n/a',
+      cpl: metaClicks > 0 ? toCurrencyUnits(metaSpend / metaClicks) : 'n/a',
+      clicks: String(metaClicks),
+      conversions: metaSummary?.metrics?.conversionValue > 0 ? toCurrencyUnits(metaSummary.metrics.conversionValue) : 'n/a',
+      campaignCount: metaCampaigns.length,
+      signal: metaSummary
+        ? 'Watch frequency, CTR, and creative rotation before moving more budget.'
+        : 'Prospecting and retargeting need separate creative and audience controls.',
+      focus: ['Creative fatigue', 'Audience overlap', 'Budget pacing'],
+      watchouts: [
+        metaSummary && metaFrequency >= 2 ? `Frequency is ${metaFrequency.toFixed(1)}x and may be fatiguing` : 'Creative rotation should remain visible',
+        metaSummary ? 'Audience overlap should be reviewed before scaling' : 'Meta guidance is still strategic',
+      ],
+      opportunities: metaCampaigns.slice(0, 3).map((campaign) => campaign.name),
+      sourceLabel: 'Meta Marketing API insights',
+      sourceHref: META_INSIGHTS_URL,
+    },
+    {
+      key: 'combined',
+      platform: 'Combined',
+      title: 'Budget balance and blended performance',
+      summary:
+        combinedRevenueUnits > 0
+          ? `Blended revenue and spend are visible across ${liveSources.length} connected sources and ${combinedCampaignCount} campaign rows.`
+          : `Blended view is available across ${liveSources.length} connected sources and ${combinedCampaignCount} campaign rows.`,
+      spend: toCurrencyUnits(combinedSpendUnits),
+      roas:
+        combinedRevenueUnits > 0 && combinedSpendUnits > 0
+          ? toRatio(combinedRevenueUnits / combinedSpendUnits)
+          : 'n/a',
+      cpl:
+        googleConversions > 0
+          ? toCurrencyUnits(googleSpendUnits / googleConversions)
+          : metaClicks > 0
+            ? toCurrencyUnits(metaSpend / metaClicks)
+            : 'n/a',
+      clicks: String(googleClicks + metaClicks),
+      conversions: combinedRevenueUnits > 0 ? toCurrencyUnits(combinedRevenueUnits) : 'n/a',
+      campaignCount: combinedCampaignCount,
+      signal: 'Use the blended view to choose the next rupee, but keep channel-level evidence visible.',
+      focus: ['Budget split', 'Blended ROAS', 'Cross-channel prioritization'],
+      watchouts: ['Blend can hide channel-specific waste', 'One winning channel can mask the other channel’s fatigue'],
+      opportunities: ['Move spend toward the channel with the cleaner evidence trail'],
+      sourceLabel: 'Blended performance model',
+      sourceHref: GOOGLE_ADS_SEARCH_URL,
+    },
+  ];
+  const analysisBlocks = [
+    {
+      key: 'search-intent',
+      title: 'Search intent mix',
+      channel: 'Google Ads',
+      status: googleSummary && googleConversions > 0 ? 'watch' : 'risk',
+      summary: googleSummary
+        ? 'Brand search is efficient, but the account should isolate non-brand demand and negative keywords before scaling.'
+        : 'Google search strategy still needs intent separation and a cleaner budget split.',
+      evidence: [
+        googleSummary ? `${googleCampaigns.length} Google campaigns in the live feed` : 'Google Ads is not connected',
+        googleSummary ? `Google conversions: ${googleConversions}` : 'Forecast-backed search work is still strategic',
+      ],
+      action: 'Split brand, competitor, and non-brand search into separate budgets and review terms weekly.',
+      sourceLabel: 'Google Ads SearchStream',
+      sourceHref: GOOGLE_ADS_SEARCH_URL,
+    },
+    {
+      key: 'creative-fatigue',
+      title: 'Creative fatigue',
+      channel: 'Meta Ads',
+      status: metaSummary && metaFrequency >= 2 ? 'risk' : 'watch',
+      summary: metaSummary
+        ? `Meta frequency is ${metaFrequency > 0 ? `${metaFrequency.toFixed(1)}x` : 'unavailable'}, so creative rotation should be refreshed before scale.`
+        : 'Meta creative and audience diagnosis is still strategic.',
+      evidence: [
+        metaSummary ? `Meta frequency: ${metaFrequency.toFixed(1)}x` : 'Meta Insights is not connected',
+        metaSummary ? `Meta reach: ${metaReach.toLocaleString('en-IN')}` : 'Creative fatigue is still a watch item',
+      ],
+      action: 'Refresh proof-led creative, rotate hooks, and keep a visible testing cadence.',
+      sourceLabel: 'Meta Marketing API insights',
+      sourceHref: META_INSIGHTS_URL,
+    },
+    {
+      key: 'budget-balance',
+      title: 'Budget balance',
+      channel: 'Combined',
+      status: 'watch',
+      summary:
+        'The blended view should drive allocation decisions, but channel-specific tabs must stay visible so the average does not hide waste.',
+      evidence: [
+        `Live sources: ${liveSources.length}`,
+        `Campaign rows: ${combinedCampaignCount}`,
+        combinedRevenueUnits > 0 ? `Tracked revenue: ${toCurrencyUnits(combinedRevenueUnits)}` : 'Tracked revenue is still directional',
+      ],
+      action: 'Use the Google and Meta tabs to move spend where the evidence is strongest.',
+      sourceLabel: 'Blended performance model',
+      sourceHref: GOOGLE_ADS_SEARCH_URL,
+    },
+    {
+      key: 'conversion-quality',
+      title: 'Conversion quality',
+      channel: 'Combined',
+      status: googleSummary && metaSummary ? 'good' : 'watch',
+      summary:
+        'The account now has enough information to separate live performance from strategy guidance and to expose the missing dimensions explicitly.',
+      evidence: [
+        googleSummary ? 'Google live data is available' : 'Google remains in strategic mode',
+        metaSummary ? 'Meta live data is available' : 'Meta remains in strategic mode',
+        'Diagnostics tabs expose what needs deeper review next',
+      ],
+      action: 'Use the diagnostics tab to identify the next decision bottleneck, then move into campaign build or budget shifts.',
+      sourceLabel: 'Evidence and planning model',
+      sourceHref: GOOGLE_ADS_KEYWORD_PLANNING_URL,
+    },
   ];
 
   const platforms = [];
@@ -625,6 +913,8 @@ export async function buildCampaignIntelligence(project, fallbackIntelligence) {
       detail: source.detail,
       available: source.available,
     })),
+    channelSummaries,
+    analysisBlocks,
     liveDataMode: true,
   };
 }

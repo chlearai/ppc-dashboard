@@ -142,6 +142,37 @@ export type CampaignAlert = {
   detail: string;
 };
 
+export type IntelligenceChannelSummary = {
+  key: 'combined' | 'google_ads' | 'meta_ads';
+  platform: 'Combined' | 'Google Ads' | 'Meta Ads';
+  title: string;
+  summary: string;
+  spend: string;
+  roas: string;
+  cpl: string;
+  clicks: string;
+  conversions: string;
+  campaignCount: number;
+  signal: string;
+  focus: string[];
+  watchouts: string[];
+  opportunities: string[];
+  sourceLabel?: string;
+  sourceHref?: string;
+};
+
+export type IntelligenceAnalysisBlock = {
+  key: string;
+  title: string;
+  channel: 'Combined' | 'Google Ads' | 'Meta Ads';
+  status: 'good' | 'watch' | 'risk';
+  summary: string;
+  evidence: string[];
+  action: string;
+  sourceLabel?: string;
+  sourceHref?: string;
+};
+
 export type CampaignIntelligence = {
   projectId: string;
   projectName: string;
@@ -151,6 +182,8 @@ export type CampaignIntelligence = {
   campaigns: CampaignRow[];
   insight: CampaignInsight;
   alerts: CampaignAlert[];
+  channelSummaries?: IntelligenceChannelSummary[];
+  analysisBlocks?: IntelligenceAnalysisBlock[];
   citations?: SourceCitation[];
   sources?: {
     source: string;

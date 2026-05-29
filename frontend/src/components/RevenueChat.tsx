@@ -72,6 +72,17 @@ export function RevenueChat({
     return status.replace(/_/g, ' ');
   }
 
+  function openProjectSetup() {
+    setShowSetup(true);
+  }
+
+  function startNewChat() {
+    setMode('Ask');
+    setDraft(chatPrompts[0].prompt);
+    setShowSetup(false);
+    setCampaignBookNotice(undefined);
+  }
+
   useEffect(() => {
     let ignore = false;
 
@@ -244,7 +255,7 @@ export function RevenueChat({
           </div>
         </div>
 
-        <button className="new-chat-button" type="button">
+        <button className="new-chat-button" onClick={startNewChat} type="button">
           <MessageSquarePlus size={17} />
           New chat
         </button>
@@ -299,7 +310,15 @@ export function RevenueChat({
 
           <div className="chat-history">
             {chats.map((chat) => (
-              <button key={chat.id} type="button">
+              <button
+                key={chat.id}
+                onClick={() => {
+                  setMode('Ask');
+                  setDraft(chat.title);
+                  setShowSetup(false);
+                }}
+                type="button"
+              >
                 {chat.title}
               </button>
             ))}
@@ -319,7 +338,7 @@ export function RevenueChat({
 
       <section className="chatgpt-main">
         <header className="chatgpt-header">
-          <button className="project-selector" type="button">
+          <button className="project-selector" onClick={openProjectSetup} type="button">
             {selectedProject.name}
             <ChevronDown size={16} />
           </button>
@@ -378,7 +397,13 @@ export function RevenueChat({
                 <h2>Connect tools for {selectedProject.name}</h2>
                 <span>Each project keeps its own Google Ads, Meta Ads, MCP, API, website, and context settings.</span>
               </div>
-              <button type="button">
+              <button
+                onClick={() => {
+                  openProjectSetup();
+                  onOpenProjects();
+                }}
+                type="button"
+              >
                 Create new project
                 <Plus size={16} />
               </button>
@@ -396,7 +421,14 @@ export function RevenueChat({
                     </div>
                     <span>{formatStatus(tool.status)}</span>
                     <p>{tool.detail}</p>
-                    <button className="ghost-button" type="button">
+                    <button
+                      className="ghost-button"
+                      onClick={() => {
+                        openProjectSetup();
+                        onOpenProjects();
+                      }}
+                      type="button"
+                    >
                       Configure
                       <ExternalLink size={15} />
                     </button>
@@ -464,7 +496,7 @@ export function RevenueChat({
                     <button onClick={() => setMode('Act')} type="button">
                       Switch to Act mode
                     </button>
-                    <button className="ghost-button" type="button">
+                    <button className="ghost-button" onClick={onOpenIntelligence} type="button">
                       Show more evidence
                     </button>
                   </div>
@@ -489,7 +521,7 @@ export function RevenueChat({
                         <li key={approval}>{approval}</li>
                       ))}
                     </ul>
-                    <button type="button">
+                    <button onClick={() => setMode('Act')} type="button">
                       <Check size={16} />
                       Review final approval
                     </button>
@@ -507,7 +539,14 @@ export function RevenueChat({
         <footer className="composer-area">
           <div className="suggestion-row">
             {chatPrompts.slice(0, 4).map((prompt) => (
-              <button key={prompt.label} onClick={() => setDraft(prompt.prompt)} type="button">
+              <button
+                key={prompt.label}
+                onClick={() => {
+                  setMode('Ask');
+                  setDraft(prompt.prompt);
+                }}
+                type="button"
+              >
                 {prompt.label}
               </button>
             ))}
