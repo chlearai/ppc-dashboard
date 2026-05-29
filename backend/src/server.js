@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { buildCampaignIntelligence, getIntegrationConfig } from './liveIntegrations.js';
 import { createRuntimeStateStore } from './runtimeStateStore.js';
 
-const HOST = process.env.HOST || '127.0.0.1';
+const HOST = process.env.HOST || '0.0.0.0';
 const PORT = Number(process.env.PORT || 8787);
 const DATA_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'data');
 const STATE_FILE = join(DATA_DIR, 'runtime-state.json');
