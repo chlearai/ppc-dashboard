@@ -6,4 +6,7 @@ export default defineConfig({
   server: {
     allowedHosts: ['ppc-dashboard-production.up.railway.app'],
   },
+  preview: {
+    allowedHosts: ['.up.railway.app'],
+  },
 });
