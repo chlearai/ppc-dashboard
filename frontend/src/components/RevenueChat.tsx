@@ -41,6 +41,7 @@ export function RevenueChat({
   const [mode, setMode] = useState<ChatMode>('Ask');
   const [draft, setDraft] = useState(chatPrompts[0].prompt);
   const [showSetup, setShowSetup] = useState(false);
+  const [showProjectDropdown, setShowProjectDropdown] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [chats, setChats] = useState<Chat[]>([]);
@@ -338,10 +339,34 @@ export function RevenueChat({
 
       <section className="chatgpt-main">
         <header className="chatgpt-header">
-          <button className="project-selector" onClick={openProjectSetup} type="button">
-            {selectedProject.name}
-            <ChevronDown size={16} />
-          </button>
+          <div className="project-selector-wrapper">
+            <button
+              className="project-selector"
+              onClick={() => setShowProjectDropdown((current) => !current)}
+              type="button"
+            >
+              {selectedProject.name}
+              <ChevronDown size={16} />
+            </button>
+            {showProjectDropdown && (
+              <div className="project-dropdown">
+                {projects.map((project) => (
+                  <button
+                    key={project.id}
+                    className={selectedProjectId === project.id ? 'active' : ''}
+                    onClick={() => {
+                      selectProject(project.id);
+                      setShowProjectDropdown(false);
+                    }}
+                    type="button"
+                  >
+                    <span>{project.name}</span>
+                    <small>{project.status}</small>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
           <div className="mode-switch">
             {(['Ask', 'Act'] as ChatMode[]).map((item) => (
